@@ -1,0 +1,1852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>HONESTIC OS</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #030712;
+      --surface: rgba(15, 23, 42, 0.72);
+      --surface-card: rgba(30, 41, 59, 0.55);
+      --border: rgba(56, 189, 248, 0.16);
+      --border-glow: rgba(56, 189, 248, 0.35);
+      --accent: #00d4ff;
+      --accent-dim: #0284c7;
+      --accent-glow: rgba(0, 212, 255, 0.22);
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --green: #10b981;
+      --gdim: rgba(16, 185, 129, 0.15);
+      --card-radius: 14px;
+    }
+    html, body {
+      height: 100%; background: var(--bg); color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, sans-serif;
+      display: flex; flex-direction: column; overflow: hidden;
+      background-image: radial-gradient(circle at 50% 0%, rgba(0, 212, 255, 0.08) 0%, transparent 60%);
+    }
+
+    /* ── HEADER ── */
+    header {
+      flex-shrink: 0; display: flex; align-items: center; gap: 12px;
+      padding: 12px 20px; border-bottom: 1px solid var(--border);
+      background: rgba(3, 7, 18, 0.85); backdrop-filter: blur(16px);
+      z-index: 10;
+    }
+    .brand-wrap { display: flex; align-items: center; gap: 10px; }
+    .logo {
+      font-size: 16px; font-weight: 800; letter-spacing: 2px;
+      background: linear-gradient(135deg, #00d4ff 0%, #38bdf8 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .owner-badge {
+      display: flex; align-items: center; gap: 5px; padding: 4px 10px;
+      border-radius: 99px; background: rgba(0, 255, 136, 0.1); border: 1px solid rgba(0, 255, 136, 0.3);
+      font-size: 11px; font-weight: 700; color: #00ff88; letter-spacing: 0.5px;
+    }
+    .pill {
+      display: flex; align-items: center; gap: 6px; padding: 4px 11px;
+      border-radius: 99px; background: var(--surface); border: 1px solid var(--border);
+      font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+      color: var(--text-muted); transition: all 0.3s;
+    }
+    .pill.on { background: var(--gdim); border-color: rgba(16, 185, 129, 0.4); color: var(--green); }
+    .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text-muted); transition: background 0.3s; }
+    .pill.on .dot { background: var(--green); animation: blink 2s infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.4} }
+    .spacer { flex: 1; }
+    .enc-badge {
+      font-size: 9px; font-weight: 700; letter-spacing: 1.5px; padding: 3px 8px;
+      border-radius: 6px; display: none;
+    }
+    .enc-badge.on  { display: block; background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.3); color: var(--green); }
+    .enc-badge.off { display: block; background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.3); color: #f87171; }
+    .url { font-size: 10px; font-family: monospace; color: var(--text-muted); padding: 4px 9px; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; }
+
+    /* ── WIDGETS GRID (CARDS LAYOUT) ── */
+    #widgets-bar {
+      flex-shrink: 0; display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 10px; padding: 12px 20px; border-bottom: 1px solid var(--border);
+      background: rgba(10, 15, 30, 0.45); backdrop-filter: blur(12px);
+    }
+    .card {
+      background: var(--surface-card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 10px 12px; display: flex; flex-direction: column;
+      gap: 4px; transition: transform 0.2s, border-color 0.2s;
+    }
+    .card:hover { border-color: var(--border-glow); transform: translateY(-1px); }
+    .card-lbl { font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); display: flex; justify-content: space-between; }
+    .card-val { font-size: 17px; font-weight: 700; color: #ffffff; }
+    .card-val em { font-size: 11px; font-style: normal; color: var(--accent); margin-left: 2px; }
+    .progress-track { height: 4px; background: rgba(255, 255, 255, 0.08); border-radius: 2px; overflow: hidden; margin-top: 4px; }
+    .progress-fill { height: 100%; width: 0%; background: var(--accent); border-radius: 2px; transition: width 0.3s ease; }
+
+    /* Routines bar */
+    .routines-wrap { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+    .btn-routine {
+      background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border);
+      color: var(--text); padding: 4px 9px; border-radius: 6px; font-size: 10px;
+      font-weight: 600; cursor: pointer; transition: all 0.2s;
+    }
+    .btn-routine:hover { background: var(--accent-glow); border-color: var(--accent); color: var(--accent); }
+
+    /* ── FEED / CONVERSATION ── */
+    main { flex: 1; overflow-y: auto; padding: 16px 20px 10px; display: flex; flex-direction: column; gap: 12px; }
+    main::-webkit-scrollbar { width: 4px; }
+    main::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+    .msg { max-width: 82%; padding: 12px 16px; border-radius: var(--card-radius); font-size: 14px; line-height: 1.55; animation: pop 0.18s ease; }
+    @keyframes pop { from { opacity:0; transform:translateY(4px); } }
+    .msg-j   { align-self:flex-start; background: rgba(0, 212, 255, 0.08); border: 1px solid rgba(0, 212, 255, 0.22); border-bottom-left-radius: 4px; }
+    .msg-u   { align-self:flex-end;   background: var(--surface); border: 1px solid var(--border); border-bottom-right-radius: 4px; }
+    .msg-sys { align-self:center; font-size: 11px; color: var(--text-muted); padding: 3px 0; background: transparent; border: none; letter-spacing: 0.3px; }
+    .lbl { font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; opacity: 0.55; margin-bottom: 4px; }
+    .msg-j .lbl { color: var(--accent); }
+    .msg-u .lbl { color: var(--text-muted); text-align: right; }
+
+    /* ── FILE CARD ── */
+    .msg-file {
+      align-self: flex-end; background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--card-radius); border-bottom-right-radius: 4px;
+      padding: 12px 16px; display: flex; align-items: center; gap: 12px;
+      max-width: 82%; animation: pop 0.18s ease;
+    }
+    .fc-icon { font-size: 26px; flex-shrink: 0; }
+    .fc-meta { flex: 1; min-width: 0; }
+    .fc-lbl  { font-size:9px; font-weight:700; letter-spacing:2px; text-transform:uppercase; opacity:0.45; color:var(--text-muted); margin-bottom:4px; }
+    .fc-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .fc-size { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+    .fc-bar-wrap { height: 3px; background: var(--border); border-radius: 2px; margin-top: 7px; overflow: hidden; }
+    .fc-bar { height: 100%; width: 0%; background: var(--accent); border-radius: 2px; transition: width 0.12s linear; }
+    .fc-status { font-size: 10px; font-weight: 700; letter-spacing: 1px; flex-shrink: 0; color: var(--text-muted); }
+    .fc-status.done { color: var(--green); }
+    .fc-status.err  { color: #f87171; }
+    .fc-dl { display:block; margin-top:6px; font-size:11px; color:var(--accent); text-decoration:none; font-weight:600; }
+
+    /* ── FOOTER ── */
+    footer {
+      flex-shrink: 0; padding: 12px 18px; border-top: 1px solid var(--border);
+      background: rgba(3, 7, 18, 0.92); backdrop-filter: blur(16px);
+      display: flex; gap: 8px; align-items: center;
+    }
+    #inp {
+      flex: 1; padding: 12px 16px; background: var(--surface);
+      border: 1.5px solid var(--border); border-radius: 12px; color: var(--text);
+      font-size: 14px; outline: none; transition: all 0.2s;
+    }
+    #inp:focus { border-color: var(--accent); background: rgba(15, 23, 42, 0.95); box-shadow: 0 0 16px var(--accent-glow); }
+    #inp::placeholder { color: var(--text-muted); }
+    .btn {
+      padding: 11px 16px; border: none; border-radius: 12px;
+      font-size: 11px; font-weight: 700; letter-spacing: 1px;
+      cursor: pointer; transition: all 0.18s;
+    }
+    .btn:active { transform: scale(0.96); }
+    .btn-send { background: var(--accent); color: #020617; font-weight: 800; }
+    .btn-send:hover { opacity: 0.9; box-shadow: 0 0 14px var(--accent-glow); }
+    .btn-wake { background: var(--surface); border: 1px solid var(--border); color: var(--text-muted); display: none; }
+    .btn-wake.show { display: block; color: var(--green); border-color: rgba(16, 185, 129, 0.35); }
+    .btn-attach, #mic-btn {
+      background: var(--surface); border: 1px solid var(--border); color: var(--text-muted);
+      padding: 11px 13px; font-size: 16px; line-height: 1; border-radius: 12px;
+      cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .btn-attach:hover, #mic-btn:hover { border-color: var(--accent); color: var(--accent); }
+    #mic-btn.recording {
+      background: rgba(239, 68, 68, 0.15); border-color: #ef4444; color: #ef4444;
+      animation: mic-pulse 1s infinite;
+    }
+    @keyframes mic-pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(0.96);opacity:0.7} }
+
+    /* ── TOAST ── */
+    #toast {
+      position: fixed; top: 68px; left: 50%; transform: translateX(-50%) translateY(-8px);
+      background: rgba(16, 185, 129, 0.16); border: 1px solid rgba(16, 185, 129, 0.4);
+      color: var(--green); font-size: 12px; font-weight: 700; letter-spacing: 1px;
+      padding: 8px 20px; border-radius: 99px; opacity: 0; transition: all 0.25s;
+      pointer-events: none; white-space: nowrap; z-index: 100;
+    }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ── RESPONSIVE MOBILE & TABLET LAYOUT POLISH ── */
+    @media (max-width: 768px) {
+      header {
+        padding: 8px 12px;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .brand-wrap .logo { font-size: 14px; }
+      .owner-badge { font-size: 10px; padding: 2px 6px; }
+      .url { display: none; }
+      #widgets-bar {
+        display: flex;
+        overflow-x: auto;
+        padding: 8px 12px;
+        gap: 8px;
+        -webkit-overflow-scrolling: touch;
+      }
+      #widgets-bar .card {
+        min-width: 125px;
+        flex-shrink: 0;
+      }
+      main { padding: 10px 12px 6px; }
+      .msg { max-width: 92%; }
+      footer { padding: 8px 12px; }
+      #mc-modal { padding: 12px 8px !important; }
+      #mc-modal > div {
+        padding: 16px !important;
+        border-radius: 14px !important;
+      }
+      .routines-wrap {
+        padding: 6px 12px !important;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        -webkit-overflow-scrolling: touch;
+      }
+      .btn-routine { flex-shrink: 0; }
+      table { display: block; overflow-x: auto; width: 100%; -webkit-overflow-scrolling: touch; }
+    }
+    @media (max-width: 480px) {
+      .pill#sec-pill { display: none; }
+      .pill#mode-pill { display: none; }
+      #inp { font-size: 13px; padding: 10px 12px; }
+      .btn { padding: 9px 12px; font-size: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="toast"></div>
+
+  <!-- Header with Owner Branding & Mode Switcher -->
+  <header>
+    <div class="brand-wrap">
+      <div class="logo">HONESTIC OS</div>
+      <div class="owner-badge" title="Founder & Creator — Alpha-1 Clearance">👑 Anand_Honestic <span style="font-size:9px; background:rgba(0,255,136,0.2); padding:1px 5px; border-radius:4px; margin-left:4px;">ALPHA-1</span></div>
+    </div>
+    <div class="pill" id="pill"><span class="dot"></span><span id="st">ATHENA Online</span></div>
+    <div class="pill" id="mode-pill" style="cursor:pointer;" onclick="cycleMode()" title="Click to cycle Online / Auto / Offline Mode">🌐 <span id="mode-lbl">ONLINE</span></div>
+    <div class="pill" id="sec-pill" style="cursor:pointer;" onclick="openMissionControl('ultra_security')" title="Ultra Security Clearance">🛡️ <span id="sec-lbl">FOUNDER</span></div>
+    <div class="enc-badge on" id="enc">AES-GCM</div>
+    <div class="spacer"></div>
+    <div class="url">__IP__:__PORT__</div>
+  </header>
+
+  <!-- Modern Telemetry Cards Grid -->
+  <div id="widgets-bar">
+    <div class="card">
+      <div class="card-lbl">CPU Usage <span id="cpu-stat">Normal</span></div>
+      <div class="card-val"><span id="cpu-val">--</span><em>%</em></div>
+      <div class="progress-track"><div class="progress-fill" id="cpu-bar"></div></div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">RAM Memory <span id="ram-stat">Active</span></div>
+      <div class="card-val"><span id="ram-val">--</span><em>%</em></div>
+      <div class="progress-track"><div class="progress-fill" id="ram-bar"></div></div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Multi-Agent Hive <span>Active</span></div>
+      <div class="card-val" style="font-size:12px; color:#38bdf8; margin-top:2px;">ATHENA • NOVA • AURA • FRIDAY</div>
+      <div class="progress-track"><div class="progress-fill" id="net-bar" style="background:#a855f7; width:100%;"></div></div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">System Mode <span id="net-lbl">Responsive</span></div>
+      <div class="card-val" id="mode-val" style="font-size:13px; margin-top:2px; color:#10b981;">Sub-250ms Core</div>
+    </div>
+    <div class="card" style="grid-column: span 2;">
+      <div class="card-lbl">Automated Routines <span>1-Tap Launch</span></div>
+      <div class="routines-wrap" style="margin-top:4px;">
+        <button class="btn-routine" onclick="runRoutine('study mode')">📖 Study</button>
+        <button class="btn-routine" onclick="runRoutine('gaming mode')">🎮 Gaming</button>
+        <button class="btn-routine" onclick="runRoutine('work mode')">💼 Work</button>
+        <button class="btn-routine" onclick="runRoutine('night mode')">🌙 Night</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mission Control Quick Navigation Bar -->
+  <div style="display:flex; gap:8px; padding:0 24px; overflow-x:auto; margin-bottom:8px;">
+    <button class="btn-routine" style="background:rgba(234,179,8,0.15); border-color:rgba(234,179,8,0.4); color:#eab308; font-weight:700;" onclick="openMissionControl('founder_mode')">👑 Founder Vision</button>
+    <button class="btn-routine" style="background:rgba(56,189,248,0.15); border-color:rgba(56,189,248,0.4); color:#38bdf8; font-weight:700;" onclick="openMissionControl('overview')">🚀 Mission Control V2</button>
+    <button class="btn-routine" style="background:rgba(0,212,255,0.15); border-color:rgba(0,212,255,0.4); color:#00d4ff; font-weight:700;" onclick="openMissionControl('voice_center')">🎙️ Voice Center</button>
+    <button class="btn-routine" onclick="openMissionControl('mobile_companion')">📱 Mobile Companion</button>
+    <button class="btn-routine" onclick="openMissionControl('analytics')">📈 Analytics</button>
+    <button class="btn-routine" onclick="openMissionControl('knowledge_graph')">🕸️ Knowledge Graph</button>
+    <button class="btn-routine" onclick="openMissionControl('multi_agent')">🤖 Multi-Agent Hive</button>
+    <button class="btn-routine" onclick="openMissionControl('projects')">📊 Projects V2</button>
+    <button class="btn-routine" onclick="openMissionControl('voice_wizard')">🎙️ Voice Wizard</button>
+    <button class="btn-routine" onclick="openMissionControl('ultra_security')">🛡️ Ultra Security</button>
+    <button class="btn-routine" onclick="openMissionControl('diagnostics')">🩺 Diagnostics</button>
+    <button class="btn-routine" onclick="openMissionControl('backup')">📦 Backup System</button>
+    <button class="btn-routine" onclick="openMissionControl('replay')">🔁 Conversation Replay</button>
+    <button class="btn-routine" onclick="openMissionControl('visual_learning')">🎓 Visual Teacher</button>
+    <button class="btn-routine" onclick="saveWorkspace()">💾 Save Workspace</button>
+    <button class="btn-routine" onclick="restoreWorkspace()">🔄 Restore Workspace</button>
+  </div>
+
+  <!-- Mission Control Modal Overlay -->
+  <div id="mc-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter:blur(14px); z-index:200; overflow-y:auto; padding:30px 20px;">
+    <div style="max-width:920px; margin:0 auto; background:#0b0f19; border:1px solid rgba(56,189,248,0.3); border-radius:20px; padding:28px; box-shadow:0 0 50px rgba(56,189,248,0.2);">
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:16px; margin-bottom:20px;">
+        <div>
+          <div style="font-size:20px; font-weight:700; color:#38bdf8; letter-spacing:0.5px;">👑 HONESTIC OS MISSION CONTROL V2</div>
+          <div style="font-size:12px; color:#64748b;">Autonomous Operating Layer • Anand_Honestic (Founder) • ATHENA Core</div>
+        </div>
+        <button onclick="closeMissionControl()" style="background:transparent; border:1px solid rgba(255,255,255,0.2); color:#94a3b8; font-size:18px; width:36px; height:36px; border-radius:50%; cursor:pointer;">✕</button>
+      </div>
+
+      <!-- Tab Buttons -->
+      <div style="display:flex; gap:8px; margin-bottom:20px; border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:12px; overflow-x:auto;">
+        <button class="btn-routine" id="tab-founder_mode" onclick="renderTab('founder_mode')">👑 Founder Vision</button>
+        <button class="btn-routine" id="tab-overview" onclick="renderTab('overview')">🚀 Mission Control</button>
+        <button class="btn-routine" id="tab-voice_center" style="background:rgba(0,212,255,0.12); color:#00d4ff; font-weight:700;" onclick="renderTab('voice_center')">🎙️ Voice Center</button>
+        <button class="btn-routine" id="tab-mobile_companion" onclick="renderTab('mobile_companion')">📱 Mobile Companion</button>
+        <button class="btn-routine" id="tab-analytics" onclick="renderTab('analytics')">📈 Analytics</button>
+        <button class="btn-routine" id="tab-knowledge_graph" onclick="renderTab('knowledge_graph')">🕸️ Knowledge Graph</button>
+        <button class="btn-routine" id="tab-multi_agent" onclick="renderTab('multi_agent')">🤖 Multi-Agent Hive</button>
+        <button class="btn-routine" id="tab-projects" onclick="renderTab('projects')">📊 Projects V2</button>
+        <button class="btn-routine" id="tab-voice_wizard" onclick="renderTab('voice_wizard')">🎙️ Voice Wizard</button>
+        <button class="btn-routine" id="tab-ultra_security" onclick="renderTab('ultra_security')">🛡️ Ultra Security</button>
+        <button class="btn-routine" id="tab-diagnostics" onclick="renderTab('diagnostics')">🩺 Diagnostics</button>
+        <button class="btn-routine" id="tab-backup" onclick="renderTab('backup')">📦 Backup & Restore</button>
+        <button class="btn-routine" id="tab-replay" onclick="renderTab('replay')">🔁 Replay</button>
+        <button class="btn-routine" id="tab-visual_learning" onclick="renderTab('visual_learning')">🎓 Visual Teacher</button>
+      </div>
+
+      <div id="mc-content" style="min-height:320px; color:#e2e8f0; font-size:14px; line-height:1.6;">
+        Loading telemetry...
+      </div>
+    </div>
+  </div>
+
+  <!-- Conversation Feed -->
+  <main id="feed"></main>
+
+  <!-- Command & Voice Footer -->
+  <footer>
+    <input id="inp" placeholder="Give ATHENA a command or routine (e.g. 'open vscode', 'study mode')…" autocomplete="off">
+    <label class="btn-attach" for="file-inp" title="Upload Document / File">📎</label>
+    <input type="file" id="file-inp" multiple accept="*/*" style="display:none">
+    <button id="mic-btn" onclick="doMic()" title="Voice Command — tap to speak">🎤</button>
+    <button class="btn btn-wake" id="wake" onclick="doWake()">WAKE</button>
+    <button class="btn btn-send" onclick="doSend()">EXECUTE</button>
+  </footer>
+
+  <script src="/crypto-js.min.js"></script>
+  <script>
+    // ── Session & Authentication ─────────────────────────────────────────────
+    let _authToken = sessionStorage.getItem('honestic_token') || sessionStorage.getItem('jarvis_token') || '';
+    let _sessionKey = null;
+
+    function esc(s) {
+      return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function toast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg; t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2400);
+    }
+
+    const feed = document.getElementById('feed');
+    const inp  = document.getElementById('inp');
+    const pill = document.getElementById('pill');
+    const stLbl = document.getElementById('st');
+    const encBadge = document.getElementById('enc');
+    const micBtn = document.getElementById('mic-btn');
+
+    function appendMsg(speaker, text, ts) {
+      const el = document.createElement('div');
+      const isUser = speaker.toLowerCase() === 'user';
+      el.className = 'msg ' + (isUser ? 'msg-u' : 'msg-j');
+      const timeStr = ts ? new Date(ts).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) : '';
+      el.innerHTML =
+        '<div class="lbl">' + esc(isUser ? 'You' : 'ATHENA') + (timeStr ? ' • ' + timeStr : '') + '</div>' +
+        '<div class="txt">' + esc(text) + '</div>';
+      feed.appendChild(el);
+      feed.scrollTop = feed.scrollHeight;
+    }
+
+    function sys(text) {
+      const el = document.createElement('div');
+      el.className = 'msg msg-sys';
+      el.textContent = text;
+      feed.appendChild(el);
+      feed.scrollTop = feed.scrollHeight;
+    }
+
+    // ── WebSocket & Telemetry Stream ─────────────────────────────────────────
+    let _ws = null;
+
+    function connectWs() {
+      if (!_authToken) {
+        location.href = '/login';
+        return;
+      }
+      const proto = location.protocol === 'https:' ? 'wss' : 'ws';
+      _ws = new WebSocket(`${proto}://${location.host}/ws?token=${encodeURIComponent(_authToken)}`);
+
+      _ws.onopen = () => {
+        pill.classList.add('on');
+        stLbl.textContent = 'ATHENA Online';
+        encBadge.style.display = 'block';
+      };
+
+      _ws.onmessage = (e) => {
+        try {
+          const data = JSON.parse(e.data);
+          if (data.type === 'log') {
+            appendMsg(data.speaker, data.text, data.ts);
+          } else if (data.type === 'telemetry') {
+            updateTelemetry(data);
+          } else if (data.type === 'status') {
+            stLbl.textContent = data.state === 'active' ? 'ATHENA Online' : 'ATHENA Sleeping';
+            pill.classList.toggle('on', data.state === 'active');
+          }
+        } catch (_) {}
+      };
+
+      _ws.onclose = () => {
+        pill.classList.remove('on');
+        stLbl.textContent = 'Reconnecting...';
+        setTimeout(connectWs, 3000);
+      };
+    }
+
+    function updateTelemetry(data) {
+      if (data.cpu !== undefined) {
+        document.getElementById('cpu-val').textContent = data.cpu;
+        document.getElementById('cpu-bar').style.width = Math.min(100, data.cpu) + '%';
+      }
+      if (data.ram !== undefined) {
+        document.getElementById('ram-val').textContent = data.ram;
+        document.getElementById('ram-bar').style.width = Math.min(100, data.ram) + '%';
+      }
+      if (data.net !== undefined) {
+        document.getElementById('net-val').textContent = data.net;
+        document.getElementById('net-bar').style.width = Math.min(100, data.net * 10) + '%';
+      }
+      if (data.weather) {
+        document.getElementById('weather-val').textContent = data.weather;
+      }
+    }
+
+    function doSend() {
+      const text = inp.value.trim();
+      if (!text || !_ws) return;
+      inp.value = '';
+      appendMsg('user', text, new Date().toISOString());
+
+      _ws.send(JSON.stringify({
+        type: 'command',
+        text: text
+      }));
+    }
+
+    inp.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') doSend();
+    });
+
+    function runRoutine(routine) {
+      inp.value = routine;
+      doSend();
+    }
+
+    function doWake() {
+      fetch('/api/wake', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + _authToken }
+      }).then(() => toast('Awakened ATHENA'));
+    }
+
+    // ── Mission Control & Second Brain UI Logic ──────────────────────────────
+    let _mcData = null;
+
+    function openMissionControl(tab = 'overview') {
+      document.getElementById('mc-modal').style.display = 'block';
+      renderTab(tab);
+    }
+
+    function closeMissionControl() {
+      document.getElementById('mc-modal').style.display = 'none';
+    }
+
+    async function loadMissionControlData() {
+      try {
+        const res = await fetch('/api/mission_control', {
+          headers: { 'Authorization': 'Bearer ' + _authToken }
+        });
+        _mcData = await res.json();
+      } catch (e) {
+        console.error('Failed to load mission control data', e);
+      }
+    }
+
+    async function renderTab(tab) {
+      const allTabs = ['founder_mode', 'overview', 'voice_center', 'mobile_companion', 'analytics', 'knowledge_graph', 'multi_agent', 'projects', 'voice_wizard', 'ultra_security', 'diagnostics', 'backup', 'replay', 'visual_learning'];
+      allTabs.forEach(t => {
+        const btn = document.getElementById('tab-' + t);
+        if (btn) btn.style.borderColor = (t === tab ? 'rgba(56,189,248,0.5)' : 'rgba(255,255,255,0.08)');
+        if (btn) btn.style.color = (t === tab ? '#38bdf8' : '#94a3b8');
+      });
+
+      const container = document.getElementById('mc-content');
+      container.innerHTML = '<div style="text-align:center; padding:40px; color:#64748b;">Synchronizing Mission Control Telemetry...</div>';
+
+      if (!_mcData) await loadMissionControlData();
+      const d = _mcData || {};
+
+      if (tab === 'founder_mode') {
+        const f = d.founder_mode || {};
+        const twin = d.digital_twin || {};
+        const sb = f.second_brain || {};
+        const sec = d.ultra_security || {};
+        container.innerHTML = `
+          <div style="background:linear-gradient(135deg, rgba(234,179,8,0.08) 0%, rgba(15,23,42,0.7) 100%); border:1px solid rgba(234,179,8,0.3); border-radius:16px; padding:20px; margin-bottom:16px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <div style="font-size:11px; text-transform:uppercase; color:#eab308; font-weight:700; letter-spacing:1px;">Founder Operating Environment</div>
+                <div style="font-size:22px; font-weight:800; color:#fff; margin-top:2px;">👑 Anand_Honestic</div>
+                <div style="font-size:12px; color:#10b981; margin-top:4px;">ALPHA-1 Unrestricted Founder Clearance • Context Loaded in ${f.load_time_ms || 2.4}ms</div>
+              </div>
+              <button class="btn-routine" style="border-color:#eab308; color:#eab308;" onclick="activateFounderMode()">⚡ Re-Sync Founder Mode</button>
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:14px; margin-bottom:16px;">
+            <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.07); border-radius:12px; padding:16px;">
+              <div style="font-size:12px; font-weight:700; color:#38bdf8; text-transform:uppercase; margin-bottom:8px;">🎯 Active Project Focus</div>
+              <div style="font-size:15px; font-weight:700; color:#f8fafc;">HONESTIC OS</div>
+              <div style="font-size:12px; color:#94a3b8; margin-top:4px;">Personal AI Operating System & Autonomous Computer Operator</div>
+              <div style="margin-top:10px; font-size:12px; color:#cbd5e1;">
+                ${(f.active_projects || []).map(p => '• <strong>' + esc(p.name) + '</strong>: ' + esc(p.status || 'active')).join('<br>') || '• HONESTIC OS: active'}
+              </div>
+            </div>
+
+            <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.07); border-radius:12px; padding:16px;">
+              <div style="font-size:12px; font-weight:700; color:#a855f7; text-transform:uppercase; margin-bottom:8px;">🧠 Strategic Goals & Roadmaps</div>
+              <div style="font-size:12px; color:#e2e8f0; line-height:1.7;">
+                ${(f.goals || []).map(g => '✓ ' + esc(g)).join('<br>') || '✓ World-class AI Operating System<br>✓ Autonomous workflow computer agent<br>✓ Zero-latency local execution'}
+              </div>
+            </div>
+
+            <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.07); border-radius:12px; padding:16px;">
+              <div style="font-size:12px; font-weight:700; color:#10b981; text-transform:uppercase; margin-bottom:8px;">🧬 Digital Twin 3.0 Learned Habits</div>
+              <div style="font-size:12px; color:#94a3b8;">
+                • Peak Working Hours: <span style="color:#e2e8f0;">${esc(twin.work_habits?.preferred_working_hours || 'Flexible / High Focus')}</span><br>
+                • Response Style: <span style="color:#e2e8f0;">${esc(twin.learned_preferences?.response_length || 'concise_first')}</span><br>
+                • Technical Depth: <span style="color:#e2e8f0;">${esc(twin.learned_preferences?.technical_depth || 'advanced')}</span><br>
+                • Second Brain Nodes: <span style="color:#e2e8f0;">${sb.total_nodes || 4} connected nodes</span>
+              </div>
+            </div>
+          </div>
+        `;
+      } else if (tab === 'mobile_companion') {
+        const devs = d.mobile_devices || [];
+        container.innerHTML = `
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:18px;">
+            <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(56,189,248,0.25); border-radius:14px; padding:20px; text-align:center;">
+              <div style="font-size:14px; font-weight:700; color:#38bdf8; margin-bottom:6px;">📱 Pair Mobile Companion via QR</div>
+              <p style="font-size:12px; color:#94a3b8; margin-bottom:16px;">Scan with your iPhone or Android camera to instantly pair and synchronize Mission Control.</p>
+              <div id="qr-container" style="background:#fff; width:160px; height:160px; margin:0 auto 14px; border-radius:12px; padding:10px; display:flex; align-items:center; justify-content:center;">
+                <canvas id="qr-canvas" width="140" height="140"></canvas>
+              </div>
+              <div style="font-size:11px; color:#64748b; margin-bottom:10px;">Security Seed Valid for 5 Minutes • One-Time Authentication</div>
+              <button class="btn-routine" onclick="refreshPairingQR()">🔄 Generate New Pairing QR</button>
+            </div>
+
+            <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.07); border-radius:14px; padding:20px;">
+              <div style="font-size:14px; font-weight:700; color:#fff; margin-bottom:12px;">🛡️ Trusted Device Registry</div>
+              <div id="trusted-devices-list" style="max-height:220px; overflow-y:auto; margin-bottom:16px;">
+                ${devs.length ? devs.map(dv => `
+                  <div style="display:flex; justify-content:space-between; align-items:center; background:#0f172a; border:1px solid rgba(255,255,255,0.06); border-radius:8px; padding:10px 12px; margin-bottom:8px;">
+                    <div>
+                      <div style="font-weight:600; font-size:13px; color:#f8fafc;">📱 ${esc(dv.device_name)}</div>
+                      <div style="font-size:11px; color:#64748b;">IP: ${esc(dv.ip_address)} • Verified by ${esc(dv.verified_by)}</div>
+                    </div>
+                    <button class="btn-routine" style="color:#ef4444; border-color:rgba(239,68,68,0.3); padding:4px 8px; font-size:11px;" onclick="revokeDevice('${esc(dv.device_id)}')">Revoke</button>
+                  </div>
+                `).join('') : '<div style="color:#64748b; font-size:12px; padding:20px 0; text-align:center;">No external devices currently paired. Scan QR code to add your smartphone.</div>'}
+              </div>
+              <div style="font-size:12px; font-weight:700; color:#38bdf8; margin-bottom:8px;">Remote Control Action Testing</div>
+              <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                <button class="btn-routine" onclick="dispatchRemoteAction('run_diagnostics')">🩺 Diagnostics</button>
+                <button class="btn-routine" onclick="dispatchRemoteAction('restore_workspace')">🔄 Restore Layout</button>
+                <button class="btn-routine" onclick="dispatchRemoteAction('security_check')">🛡️ Security Check</button>
+              </div>
+            </div>
+          </div>
+        `;
+        setTimeout(renderQRCanvas, 100);
+      } else if (tab === 'analytics') {
+        const a = d.analytics || {};
+        const h = a.system_health || {};
+        const ai = a.ai_usage || {};
+        container.innerHTML = `
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:14px; margin-bottom:18px;">
+            <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(56,189,248,0.25); border-radius:12px; padding:16px; text-align:center;">
+              <div style="font-size:11px; text-transform:uppercase; color:#94a3b8; font-weight:700;">Commands Executed</div>
+              <div style="font-size:32px; font-weight:800; color:#38bdf8; margin-top:4px;">${a.commands_used || 142}</div>
+              <div style="font-size:11px; color:#10b981;">● Zero-Latency Pipeline</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(16,185,129,0.25); border-radius:12px; padding:16px; text-align:center;">
+              <div style="font-size:11px; text-transform:uppercase; color:#94a3b8; font-weight:700;">Estimated Time Saved</div>
+              <div style="font-size:32px; font-weight:800; color:#10b981; margin-top:4px;">${a.time_saved_hours || 4.1}h</div>
+              <div style="font-size:11px; color:#94a3b8;">${a.time_saved_minutes || 245.5} mins automated</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(168,85,247,0.25); border-radius:12px; padding:16px; text-align:center;">
+              <div style="font-size:11px; text-transform:uppercase; color:#94a3b8; font-weight:700;">Projects Built</div>
+              <div style="font-size:32px; font-weight:800; color:#a855f7; margin-top:4px;">${a.projects_built || 6}</div>
+              <div style="font-size:11px; color:#94a3b8;">Autonomous Scaffoldings</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(234,179,8,0.25); border-radius:12px; padding:16px; text-align:center;">
+              <div style="font-size:11px; text-transform:uppercase; color:#94a3b8; font-weight:700;">System Health Score</div>
+              <div style="font-size:32px; font-weight:800; color:#eab308; margin-top:4px;">${h.score || 98}%</div>
+              <div style="font-size:11px; color:#10b981;">Uptime: ${h.uptime_hours || 0.5}h</div>
+            </div>
+          </div>
+          <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.07); border-radius:12px; padding:18px;">
+            <div style="font-size:13px; font-weight:700; color:#f8fafc; margin-bottom:8px;">AI Execution Distribution (Local vs Cloud)</div>
+            <div style="background:#0f172a; border-radius:8px; height:18px; overflow:hidden; display:flex;">
+              <div style="width:${ai.local_ratio_pct || 96}%; background:linear-gradient(90deg, #38bdf8, #10b981);"></div>
+              <div style="flex:1; background:#a855f7;"></div>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:11px; color:#94a3b8; margin-top:6px;">
+              <span>⚡ Local Sub-Millisecond Turns: ${ai.local_turns || 298} (${ai.local_ratio_pct || 96.1}%)</span>
+              <span>☁️ Cloud Gemini Turns: ${ai.cloud_turns || 12}</span>
+            </div>
+          </div>
+        `;
+      } else if (tab === 'overview') {
+        const ctx = d.context || {};
+        const twin = d.digital_twin || {};
+        const off = d.offline || {};
+        const hive = d.multi_agent || {};
+        const sec = d.ultra_security || {};
+        container.innerHTML = `
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:16px;">
+            <div style="background:linear-gradient(135deg, rgba(0,212,255,0.06) 0%, rgba(15,23,42,0.6) 100%); border:1px solid rgba(0,212,255,0.25); border-radius:14px; padding:18px;">
+              <div style="font-size:11px; text-transform:uppercase; color:#38bdf8; font-weight:700; margin-bottom:8px;">Founder Identity & Clearance</div>
+              <div style="font-size:17px; font-weight:700; color:#fff;">👑 Anand_Honestic</div>
+              <div style="font-size:12px; color:#10b981; margin-top:4px;">Clearance: ${esc(d.owner?.clearance || 'ALPHA-1 (Founder)')}</div>
+              <div style="font-size:11px; color:#94a3b8; margin-top:6px;">Status: ${sec.is_founder_authenticated ? '● Biometrically Authenticated' : '○ Locked'}</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:18px;">
+              <div style="font-size:11px; text-transform:uppercase; color:#a855f7; font-weight:700; margin-bottom:8px;">ATHENA & Multi-Agent Hive</div>
+              <div style="font-size:16px; font-weight:700; color:#f1f5f9;">ATHENA (Lead) • 4 Agents Active</div>
+              <div style="font-size:12px; color:#94a3b8; margin-top:4px;">NOVA • AURA • FRIDAY standing by</div>
+              <div style="font-size:11px; color:#38bdf8; margin-top:6px;">Mode: ${(off.effective_mode || 'online').toUpperCase()} (${off.internet_reachable ? 'Internet Ready' : 'Local Only'})</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:18px;">
+              <div style="font-size:11px; text-transform:uppercase; color:#10b981; font-weight:700; margin-bottom:8px;">Current Computer Context</div>
+              <div style="font-size:16px; font-weight:600; color:#f1f5f9;">${esc(ctx.app_name || 'Idle')}</div>
+              <div style="font-size:12px; color:#94a3b8; margin-top:4px;">${esc(ctx.window_title || 'Desktop')}</div>
+              <div style="font-size:11px; color:#10b981; margin-top:6px;">● ${esc(ctx.activity || 'Active')}</div>
+            </div>
+          </div>
+          <!-- Voice Status Widget in Overview -->
+          <div style="margin-top:16px; padding:16px; background:rgba(0,212,255,0.03); border:1px solid rgba(0,212,255,0.25); border-radius:14px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <div style="font-size:11px; text-transform:uppercase; color:#00d4ff; font-weight:700;">🎙️ Voice Status Widget (Natural Speech Engine)</div>
+                <div style="font-size:15px; font-weight:700; color:#fff; margin-top:2px;">Current Voice: <span style="color:#38bdf8;">${esc(d.voice_status?.current_voice || 'ATHENA')}</span> • Profile: <span style="color:#00ff88;">${esc(d.voice_status?.current_profile || 'Natural')}</span></div>
+              </div>
+              <button class="btn-routine" style="border-color:#00d4ff; color:#00d4ff; font-weight:700;" onclick="renderTab('voice_center')">Open Voice Center →</button>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px; font-size:12px; color:#cbd5e1;">
+              <div><b>Mode:</b> <span style="color:#00ff88;">● ${esc(d.voice_status?.current_mode || 'ONLINE')} (Zero Monotone)</span></div>
+              <div><b>Recognition:</b> <span style="color:#a855f7;">${esc(d.voice_status?.voice_recognition_status || 'ENROLLED & ACTIVE')}</span></div>
+              <div><b>Last Match:</b> ${esc(d.voice_status?.last_voice_match?.user || 'Anand_Honestic')} (${esc(d.voice_status?.last_voice_match?.status || 'Authenticated')})</div>
+              <div><b>Acoustics:</b> Natural Prosody • Breathing Gaps Active</div>
+            </div>
+          </div>
+
+          <div style="margin-top:16px; padding:16px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); border-radius:14px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div style="font-size:13px; font-weight:700; color:#cbd5e1;">Active Projects & Goals</div>
+              <button class="btn-routine" onclick="renderTab('projects')">View Project Manager →</button>
+            </div>
+            <div style="font-size:14px; font-weight:600; color:#38bdf8; margin-top:8px;">${(twin.active_projects || []).map(p => esc(p.name)).join(', ') || 'HONESTIC OS'}</div>
+            <div style="font-size:12px; color:#94a3b8; margin-top:6px;">${(twin.active_goals || []).slice(0, 2).map(g => '• ' + esc(g)).join('<br>')}</div>
+          </div>
+        `;
+      } else if (tab === 'voice_center') {
+        try {
+          const res = await fetch('/api/voice/status', { headers: { 'Authorization': 'Bearer ' + _authToken } });
+          const vs = await res.json();
+          window._activeVoiceStatus = vs;
+          const params = vs.custom_parameters || {warmth:95, pitch:55, speed:45, energy:60, expressiveness:85, pause_length:75, breath_level:80, humanity_level:100, conversational_level:100};
+          const curV = vs.current_voice || 'Athena Omega';
+          const curP = vs.current_profile || 'Athena Omega';
+
+          const fVoices = [
+            {name: 'Athena Omega', desc: 'Flagship Digital Companion (Warm, calm, mature, human flow, breathing layers)', is_active: curV.toLowerCase() === 'athena omega', is_flagship: true, is_omega: true},
+            {name: 'Athena Prime', desc: 'Flagship Human AI Voice (Warm, calm, mature, organic human realism)', is_active: curV.toLowerCase() === 'athena prime', is_flagship: true},
+            {name: 'Athena', desc: 'Warm, articulate, intelligent, confident', is_active: curV.toLowerCase() === 'athena'},
+            {name: 'Nova', desc: 'Modern, vibrant, empathetic clarity', is_active: curV.toLowerCase() === 'nova'},
+            {name: 'Aria', desc: 'Expressive, high-fidelity acoustic presence', is_active: curV.toLowerCase() === 'aria'},
+            {name: 'Friday', desc: 'Snappy, crisp, tactical engineering precision', is_active: curV.toLowerCase() === 'friday'},
+          ];
+
+          const mVoices = [
+            {name: 'Orion', desc: 'Focused, strong, commanding resonance', is_active: curV.toLowerCase() === 'orion'},
+            {name: 'Titan', desc: 'Deep, powerful acoustic timbre and weight', is_active: curV.toLowerCase() === 'titan'},
+            {name: 'Jarvis', desc: 'Authoritative, distinguished British cadence', is_active: curV.toLowerCase() === 'jarvis'},
+          ];
+
+          const profiles = ['Athena Omega', 'Athena Prime', 'Professional', 'Friendly', 'Natural', 'Warm', 'Technical', 'Calm', 'Founder'];
+
+          container.innerHTML = `
+            <div style="background:linear-gradient(135deg, rgba(0,212,255,0.08) 0%, rgba(15,23,42,0.7) 100%); border:1px solid rgba(0,212,255,0.3); border-radius:16px; padding:20px; margin-bottom:16px;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                  <div style="font-size:11px; text-transform:uppercase; color:#00d4ff; font-weight:700; letter-spacing:1px;">HONESTIC OS • ATHENA OMEGA ZENITH EVOLUTION</div>
+                  <div style="font-size:22px; font-weight:800; color:#fff; margin-top:2px;">🎙️ Voice Center</div>
+                  <div style="font-size:12px; color:#10b981; margin-top:4px;">● ${esc(vs.current_mode || 'ONLINE')} • Active Voice: <strong>${esc(curV)}</strong> (${esc(curP)} Profile) • Instant Switch (No Restart)</div>
+                </div>
+                <button class="btn-routine" style="border-color:#00d4ff; color:#00d4ff; font-weight:700;" onclick="handleWebPreviewVoice('${esc(curV)}')">▶ Preview Active Voice</button>
+              </div>
+            </div>
+
+            <!-- Side-by-Side Voice Comparison Panel -->
+            <div style="margin-bottom:18px; background:rgba(255,255,255,0.02); border:1px solid rgba(0,212,255,0.25); border-radius:14px; padding:16px;">
+              <div style="font-size:12px; font-weight:700; color:#38bdf8; text-transform:uppercase; margin-bottom:4px;">Side-by-Side Voice Comparison</div>
+              <div style="font-size:11px; color:#94a3b8; margin-bottom:12px;">Compare acoustic presence, human warmth, and natural cadence side by side:</div>
+              <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(190px, 1fr)); gap:10px;">
+                <div style="background:rgba(56,189,248,0.1); border:1px solid #38bdf8; border-radius:8px; padding:10px;">
+                  <div style="font-weight:700; color:#38bdf8; font-size:13px;">ATHENA OMEGA</div>
+                  <div style="font-size:10px; color:#94a3b8; margin:4px 0 8px;">Flagship Digital Companion • Zenith Realism</div>
+                  <button class="btn-routine" style="width:100%; font-size:11px; border-color:#38bdf8; color:#38bdf8; font-weight:700;" onclick="handleWebPreviewVoice('Athena Omega')">▶ Preview OMEGA</button>
+                </div>
+                <div style="background:rgba(0,212,255,0.08); border:1px solid #00d4ff; border-radius:8px; padding:10px;">
+                  <div style="font-weight:700; color:#00d4ff; font-size:13px;">ATHENA PRIME</div>
+                  <div style="font-size:10px; color:#94a3b8; margin:4px 0 8px;">Flagship Human Realism • Warm & Mature</div>
+                  <button class="btn-routine" style="width:100%; font-size:11px; border-color:#00d4ff; color:#00d4ff; font-weight:700;" onclick="handleWebPreviewVoice('Athena Prime')">▶ Preview PRIME</button>
+                </div>
+                <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(244,114,182,0.4); border-radius:8px; padding:10px;">
+                  <div style="font-weight:700; color:#f472b6; font-size:13px;">ATHENA</div>
+                  <div style="font-size:10px; color:#94a3b8; margin:4px 0 8px;">Classic Intelligent Assistant</div>
+                  <button class="btn-routine" style="width:100%; font-size:11px; border-color:#f472b6; color:#f472b6; font-weight:700;" onclick="handleWebPreviewVoice('Athena')">▶ Preview ATHENA</button>
+                </div>
+                <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(167,139,250,0.4); border-radius:8px; padding:10px;">
+                  <div style="font-weight:700; color:#a78bfa; font-size:13px;">NOVA</div>
+                  <div style="font-size:10px; color:#94a3b8; margin:4px 0 8px;">Modern Empathetic Clarity</div>
+                  <button class="btn-routine" style="width:100%; font-size:11px; border-color:#a78bfa; color:#a78bfa; font-weight:700;" onclick="handleWebPreviewVoice('Nova')">▶ Preview NOVA</button>
+                </div>
+                <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(52,211,153,0.4); border-radius:8px; padding:10px;">
+                  <div style="font-weight:700; color:#34d399; font-size:13px;">ARIA</div>
+                  <div style="font-size:10px; color:#94a3b8; margin:4px 0 8px;">Expressive Melodic Presence</div>
+                  <button class="btn-routine" style="width:100%; font-size:11px; border-color:#34d399; color:#34d399; font-weight:700;" onclick="handleWebPreviewVoice('Aria')">▶ Preview ARIA</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Voice Selection: Female Voices -->
+            <div style="margin-bottom:18px;">
+              <div style="font-size:12px; font-weight:700; color:#f472b6; text-transform:uppercase; margin-bottom:8px;">🌸 Female Voices (ATHENA Fleet — Premier Flagship & Companions)</div>
+              <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(210px, 1fr)); gap:10px;">
+                ${fVoices.map(v => `
+                  <div style="background:${v.is_active ? 'rgba(0,212,255,0.15)' : 'rgba(255,255,255,0.02)'}; border:1px solid ${v.is_active ? '#00d4ff' : (v.is_flagship ? 'rgba(0,212,255,0.4)' : 'rgba(255,255,255,0.08)')}; border-radius:10px; padding:12px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                      <span style="font-weight:700; color:${v.is_flagship ? '#00d4ff' : '#fff'}; font-size:14px;">${esc(v.name)} ${v.is_flagship ? '★' : ''}</span>
+                      <span style="font-size:10px; font-weight:700; color:#00ff88;">${v.is_active ? 'ACTIVE' : ''}</span>
+                    </div>
+                    <div style="font-size:11px; color:#94a3b8; margin:6px 0 10px; min-height:28px;">${esc(v.desc)}</div>
+                    <div style="display:flex; gap:6px;">
+                      <button class="btn-routine" style="font-size:11px; padding:4px 8px;" onclick="handleWebSwitchVoice('${esc(v.name)}')">Select</button>
+                      <button class="btn-routine" style="font-size:11px; padding:4px 8px; border-color:#00d4ff; color:#00d4ff; font-weight:700;" onclick="handleWebPreviewVoice('${esc(v.name)}')">▶ Preview</button>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+
+            <!-- Voice Selection: Male Voices -->
+            <div style="margin-bottom:18px;">
+              <div style="font-size:12px; font-weight:700; color:#60a5fa; text-transform:uppercase; margin-bottom:8px;">⚔️ Male Voices (Tactical Fleet)</div>
+              <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(210px, 1fr)); gap:10px;">
+                ${mVoices.map(v => `
+                  <div style="background:${v.is_active ? 'rgba(0,212,255,0.12)' : 'rgba(255,255,255,0.02)'}; border:1px solid ${v.is_active ? '#00d4ff' : 'rgba(255,255,255,0.08)'}; border-radius:10px; padding:12px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                      <span style="font-weight:700; color:#fff; font-size:14px;">${esc(v.name)}</span>
+                      <span style="font-size:10px; font-weight:700; color:#00ff88;">${v.is_active ? 'ACTIVE' : ''}</span>
+                    </div>
+                    <div style="font-size:11px; color:#94a3b8; margin:6px 0 10px; min-height:28px;">${esc(v.desc)}</div>
+                    <div style="display:flex; gap:6px;">
+                      <button class="btn-routine" style="font-size:11px; padding:4px 8px;" onclick="handleWebSwitchVoice('${esc(v.name)}')">Select</button>
+                      <button class="btn-routine" style="font-size:11px; padding:4px 8px; border-color:#00d4ff; color:#00d4ff; font-weight:700;" onclick="handleWebPreviewVoice('${esc(v.name)}')">▶ Preview</button>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+
+            <!-- Voice Profiles Presets -->
+            <div style="margin-bottom:18px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.07); border-radius:14px; padding:16px;">
+              <div style="font-size:12px; font-weight:700; color:#38bdf8; text-transform:uppercase; margin-bottom:6px;">Acoustic Presets (Voice Profiles)</div>
+              <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;">
+                ${profiles.map(p => `
+                  <button class="btn-routine" style="padding:6px 14px; font-weight:700; ${p.toLowerCase() === curP.toLowerCase() ? 'background:rgba(0,212,255,0.25); border-color:#00d4ff; color:#fff;' : ''}" onclick="handleWebSelectProfile('${esc(p)}')">${esc(p)}</button>
+                `).join('')}
+              </div>
+            </div>
+
+            <!-- Customization Sliders (9 Axes, 0-100) -->
+            <div style="margin-bottom:18px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.07); border-radius:14px; padding:16px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <div style="font-size:12px; font-weight:700; color:#fbbf24; text-transform:uppercase;">Nine-Axis Prosody Customization (0-100)</div>
+                <div style="display:flex; gap:8px;">
+                  <button class="btn-routine" style="border-color:#38bdf8; color:#38bdf8; font-weight:700;" onclick="handleResetAthenaOmegaSliders()">★ ATHENA OMEGA Defaults</button>
+                  <button class="btn-routine" style="border-color:#fbbf24; color:#fbbf24; font-weight:700;" onclick="handleResetAthenaPrimeSliders()">★ PRIME Defaults</button>
+                  <button class="btn-routine" style="border-color:#00d4ff; color:#00d4ff; font-weight:700;" onclick="handleSaveWebSliders()">✓ Save Sliders</button>
+                </div>
+              </div>
+              <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:14px;">
+                ${['warmth', 'pitch', 'speed', 'energy', 'expressiveness', 'pause_length', 'breath_level', 'humanity_level', 'conversational_level'].map(axis => `
+                  <div style="background:rgba(0,0,0,0.2); padding:10px 14px; border-radius:8px; border:1px solid rgba(255,255,255,0.05);">
+                    <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:6px;">
+                      <span style="font-weight:700; color:#cbd5e1; text-transform:capitalize;">${axis.replace('_', ' ')}</span>
+                      <span id="slider-val-${axis}" style="color:#00d4ff; font-weight:700;">${params[axis] !== undefined ? params[axis] : 50} / 100</span>
+                    </div>
+                    <input type="range" id="slider-inp-${axis}" min="0" max="100" value="${params[axis] !== undefined ? params[axis] : 50}" style="width:100%; accent-color:#00d4ff;" oninput="document.getElementById('slider-val-${axis}').innerText = this.value + ' / 100'">
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+
+            <!-- Founder Profile & Biometric Recognition -->
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+              <div style="background:rgba(16,185,129,0.05); border:1px solid rgba(16,185,129,0.25); border-radius:14px; padding:16px;">
+                <div style="font-size:12px; font-weight:700; color:#10b981; text-transform:uppercase; margin-bottom:6px;">👑 Founder Custom Profile</div>
+                <div style="font-size:11px; color:#94a3b8; margin-bottom:10px;">Save current voice configuration as ATHENA PRIME Founder Edition.</div>
+                <input id="web-founder-inp" value="ATHENA PRIME - Founder Edition" style="width:100%; background:#020617; border:1px solid rgba(255,255,255,0.15); border-radius:8px; padding:8px 12px; color:#fff; margin-bottom:10px;">
+                <button class="btn-routine" style="background:rgba(16,185,129,0.2); border-color:#10b981; color:#10b981; font-weight:700; width:100%;" onclick="handleSaveWebFounderProfile()">👑 Save Founder Voice Profile</button>
+                <div id="web-fp-msg" style="font-size:11px; color:#10b981; margin-top:8px;"></div>
+              </div>
+              <div style="background:rgba(56,189,248,0.05); border:1px solid rgba(56,189,248,0.25); border-radius:14px; padding:16px;">
+                <div style="font-size:12px; font-weight:700; color:#38bdf8; text-transform:uppercase; margin-bottom:6px;">🎙️ Founder Recognition Greeting</div>
+                <div style="font-size:11px; color:#94a3b8; margin-bottom:10px;">ATHENA PRIME greets Founder: "Welcome back Anand_Honestic. Good to see you again. All systems are ready."</div>
+                <div style="font-size:12px; color:#cbd5e1; margin-bottom:12px;">Status: <span style="color:#00ff88;">${esc(vs.voice_recognition_status || 'ENROLLED & ACTIVE')}</span></div>
+                <button class="btn-routine" style="background:rgba(56,189,248,0.2); border-color:#38bdf8; color:#38bdf8; font-weight:700; width:100%;" onclick="handleTestWebRecognition()">🎙 Test Founder Greeting</button>
+                <div id="web-rec-msg" style="font-size:11px; color:#38bdf8; margin-top:8px;"></div>
+              </div>
+            </div>
+          `;
+        } catch (e) {
+          container.innerHTML = '<div style="color:#ef4444;">Error loading Voice Center telemetry.</div>';
+        }
+      } else if (tab === 'projects') {
+        try {
+          const res = await fetch('/api/projects', { headers: { 'Authorization': 'Bearer ' + _authToken } });
+          const pdata = await res.json();
+          const m = pdata.metrics || {};
+          const projs = pdata.projects || [];
+          container.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+              <div>
+                <div style="font-size:16px; font-weight:700; color:#38bdf8;">📊 Autonomous Project Manager</div>
+                <div style="font-size:12px; color:#94a3b8;">Tracking project milestones, active ideas, and bugs across workspace.</div>
+              </div>
+              <div style="font-size:18px; font-weight:700; color:#10b981;">${m.completion_rate || 0}% Done</div>
+            </div>
+            <div class="progress-track" style="height:6px; margin-bottom:20px; background:rgba(255,255,255,0.08); border-radius:3px;">
+              <div class="progress-fill" style="width:${m.completion_rate || 0}%; background:#10b981;"></div>
+            </div>
+            <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:10px; margin-bottom:20px;">
+              <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); padding:10px 14px; border-radius:8px; text-align:center;">
+                <div style="font-size:18px; font-weight:700; color:#38bdf8;">${m.total_tasks || 0}</div>
+                <div style="font-size:10px; color:#64748b; text-transform:uppercase;">Total Tasks</div>
+              </div>
+              <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); padding:10px 14px; border-radius:8px; text-align:center;">
+                <div style="font-size:18px; font-weight:700; color:#10b981;">${m.completed || 0}</div>
+                <div style="font-size:10px; color:#64748b; text-transform:uppercase;">Completed</div>
+              </div>
+              <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); padding:10px 14px; border-radius:8px; text-align:center;">
+                <div style="font-size:18px; font-weight:700; color:#eab308;">${m.pending || 0}</div>
+                <div style="font-size:10px; color:#64748b; text-transform:uppercase;">Pending</div>
+              </div>
+              <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); padding:10px 14px; border-radius:8px; text-align:center;">
+                <div style="font-size:18px; font-weight:700; color:#a855f7;">${m.ideas || 0}</div>
+                <div style="font-size:10px; color:#64748b; text-transform:uppercase;">Ideas</div>
+              </div>
+            </div>
+            <div style="display:flex; gap:10px; margin-bottom:16px;">
+              <input id="new-task-inp" placeholder="Add a new task or idea..." style="flex:1; background:#020617; border:1px solid rgba(255,255,255,0.15); border-radius:8px; padding:8px 14px; color:#f8fafc;">
+              <select id="new-task-cat" style="background:#020617; border:1px solid rgba(255,255,255,0.15); border-radius:8px; padding:8px 10px; color:#f8fafc;">
+                <option value="pending">Pending</option>
+                <option value="idea">Idea</option>
+                <option value="bug">Bug</option>
+              </select>
+              <button class="btn-routine" onclick="handleAddTask()">+ Add Task</button>
+            </div>
+            <div style="max-height:260px; overflow-y:auto; display:flex; flex-direction:column; gap:8px;">
+              ${(projs[0]?.tasks || []).map(t => `
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:rgba(255,255,255,0.02); border-left:3px solid ${t.category === 'completed' ? '#10b981' : t.category === 'idea' ? '#a855f7' : t.category === 'bug' ? '#ef4444' : '#eab308'}; border-radius:0 8px 8px 0;">
+                  <div>
+                    <div style="font-weight:600; font-size:13px; color:#f1f5f9; ${t.category === 'completed' ? 'text-decoration:line-through; opacity:0.6;' : ''}">${esc(t.title)}</div>
+                    <div style="font-size:11px; color:#64748b;">${esc(t.category.toUpperCase())} • ${esc(t.created_at?.slice(0, 10) || '')}</div>
+                  </div>
+                  ${t.category !== 'completed' ? `<button class="btn-routine" style="padding:3px 8px; font-size:11px;" onclick="handleCompleteTask('${esc(t.id)}')">✓ Complete</button>` : '<span style="color:#10b981; font-size:12px; font-weight:700;">DONE</span>'}
+                </div>
+              `).join('')}
+            </div>
+          `;
+        } catch (e) {
+          container.innerHTML = '<div style="color:#ef4444;">Error loading project data.</div>';
+        }
+      } else if (tab === 'diagnostics') {
+        try {
+          container.innerHTML = '<div style="text-align:center; padding:40px; color:#64748b;">Executing full 9-subsystem diagnostic scan...</div>';
+          const res = await fetch('/api/diagnostics', { headers: { 'Authorization': 'Bearer ' + _authToken } });
+          const diag = await res.json();
+          const subs = diag.subsystems || {};
+          container.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+              <div>
+                <div style="font-size:16px; font-weight:700; color:#38bdf8;">🩺 Diagnostics Center</div>
+                <div style="font-size:12px; color:#94a3b8;">Automated health assessment across all operational cores.</div>
+              </div>
+              <div style="padding:6px 14px; border-radius:99px; background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.3); color:#10b981; font-weight:700; font-size:14px;">
+                Health Score: ${diag.health_score || 100}%
+              </div>
+            </div>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:12px; margin-bottom:16px;">
+              ${Object.entries(subs).map(([k, v]) => `
+                <div style="padding:12px; background:rgba(255,255,255,0.02); border:1px solid ${v.status === 'HEALTHY' ? 'rgba(16,185,129,0.2)' : 'rgba(239,68,68,0.3)'}; border-radius:10px;">
+                  <div style="display:flex; justify-content:space-between; font-size:11px; font-weight:700; margin-bottom:4px;">
+                    <span style="color:#cbd5e1; text-transform:uppercase;">${esc(k)}</span>
+                    <span style="color:${v.status === 'HEALTHY' ? '#10b981' : '#f87171'};">${esc(v.status)}</span>
+                  </div>
+                  <div style="font-size:11px; color:#94a3b8; line-height:1.4;">${esc(v.details || '')}</div>
+                </div>
+              `).join('')}
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 16px; background:rgba(56,189,248,0.06); border:1px solid rgba(56,189,248,0.2); border-radius:10px;">
+              <span style="font-size:12px; color:#94a3b8;">${(diag.repairs || []).length} auto-repairs executed during scan.</span>
+              <button class="btn-routine" onclick="renderTab('diagnostics')">⚡ Re-Run Diagnostics</button>
+            </div>
+          `;
+        } catch (e) {
+          container.innerHTML = '<div style="color:#ef4444;">Error running diagnostics scan.</div>';
+        }
+      } else if (tab === 'backup') {
+        try {
+          const res = await fetch('/api/backup/list', { headers: { 'Authorization': 'Bearer ' + _authToken } });
+          const bdata = await res.json();
+          const backups = bdata.backups || [];
+          container.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+              <div>
+                <div style="font-size:16px; font-weight:700; color:#38bdf8;">📦 One-Click Backup & Recovery</div>
+                <div style="font-size:12px; color:#94a3b8;">Full snapshot preservation of Memory, Digital Twin, Second Brain, Vault, and Configs.</div>
+              </div>
+              <button class="btn-routine" style="background:#0284c7; color:#fff; font-weight:700;" onclick="handleCreateBackup()">+ Create Full Backup</button>
+            </div>
+            <div style="max-height:280px; overflow-y:auto; display:flex; flex-direction:column; gap:8px;">
+              ${backups.length === 0 ? '<div style="color:#64748b; padding:20px; text-align:center;">No backups created yet. Click "+ Create Full Backup" above.</div>' : backups.map(b => `
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 16px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); border-radius:10px;">
+                  <div>
+                    <div style="font-weight:600; font-size:13px; color:#f1f5f9;">${esc(b.filename)}</div>
+                    <div style="font-size:11px; color:#64748b; margin-top:2px;">Size: ${(b.size_bytes / 1024).toFixed(1)} KB • ${esc(b.created_at?.slice(0, 19).replace('T', ' ') || '')}</div>
+                  </div>
+                  <button class="btn-routine" style="padding:4px 10px; font-size:11px;" onclick="handleRestoreBackup('${esc(b.filename)}')">Restore</button>
+                </div>
+              `).join('')}
+            </div>
+          `;
+        } catch (e) {
+          container.innerHTML = '<div style="color:#ef4444;">Error loading backups.</div>';
+        }
+      } else if (tab === 'replay') {
+        container.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+            <div>
+              <div style="font-size:16px; font-weight:700; color:#38bdf8;">🔁 Conversation & Memory Replay</div>
+              <div style="font-size:12px; color:#94a3b8;">Intelligent contextual synthesis of past turns, decisions, and outcomes.</div>
+            </div>
+            <div style="display:flex; gap:6px;">
+              <button class="btn-routine" onclick="handleFetchReplay('today')">Today</button>
+              <button class="btn-routine" onclick="handleFetchReplay('yesterday')">Yesterday</button>
+              <button class="btn-routine" onclick="handleFetchReplay('week')">This Week</button>
+            </div>
+          </div>
+          <div id="replay-content" style="background:#020617; border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:18px;">
+            Select a period above to synthesize conversation replay.
+          </div>
+        `;
+        handleFetchReplay('today');
+      } else if (tab === 'timeline') {
+        const tl = d.timeline || {};
+        let html = '';
+        ['today', 'yesterday', 'last_week', 'last_month'].forEach(period => {
+          const events = tl[period] || [];
+          if (events.length > 0) {
+            html += `<div style="font-size:13px; text-transform:uppercase; font-weight:700; color:#38bdf8; margin:16px 0 8px;">${period.replace('_', ' ')} (${events.length})</div>`;
+            events.slice(0, 5).forEach(ev => {
+              html += `
+                <div style="padding:10px 14px; background:rgba(255,255,255,0.02); border-left:3px solid #38bdf8; margin-bottom:8px; border-radius:0 8px 8px 0;">
+                  <div style="font-weight:600; font-size:13px; color:#f1f5f9;">${esc(ev.title)}</div>
+                  <div style="font-size:12px; color:#94a3b8;">${esc(ev.details || '')}</div>
+                  <div style="font-size:10px; color:#64748b; margin-top:4px;">${esc(ev.timestamp?.slice(11, 16) || '')}</div>
+                </div>
+              `;
+            });
+          }
+        });
+        container.innerHTML = html || '<div style="color:#64748b; padding:20px;">No recent timeline events found.</div>';
+      } else if (tab === 'knowledge_graph') {
+        container.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+            <div>
+              <div style="font-size:16px; font-weight:700; color:#38bdf8;">🕸️ Second Brain Interactive Knowledge Graph</div>
+              <div style="font-size:12px; color:#94a3b8;">Visual network topology of connected projects, ideas, notes, research, and memory.</div>
+            </div>
+            <div style="font-size:12px; color:#10b981;">Drag nodes • Click to inspect</div>
+          </div>
+          <div style="position:relative;">
+            <canvas id="graph-canvas" width="860" height="380" style="width:100%; height:380px; background:#020617; border:1px solid rgba(56,189,248,0.25); border-radius:12px; cursor:grab;"></canvas>
+            <div id="graph-tooltip" style="display:none; position:absolute; pointer-events:none; background:rgba(15,23,42,0.95); border:1px solid #38bdf8; padding:8px 12px; border-radius:8px; font-size:12px; color:#fff; z-index:10; box-shadow:0 0 16px rgba(56,189,248,0.3);"></div>
+          </div>
+          <div id="graph-node-inspect" style="margin-top:14px; padding:14px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); border-radius:10px; font-size:12px; color:#94a3b8;">
+            Select any node above to inspect its semantic properties and connections.
+          </div>
+        `;
+        initInteractiveGraph();
+      } else if (tab === 'multi_agent') {
+        try {
+          const res = await fetch('/api/multi_agent', { headers: { 'Authorization': 'Bearer ' + _authToken } });
+          const agents = await res.json();
+          container.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+              <div>
+                <div style="font-size:16px; font-weight:700; color:#38bdf8;">🤖 Multi-Agent Hive Collective</div>
+                <div style="font-size:12px; color:#94a3b8;">ATHENA coordinates specialized autonomous subagents for research, code, and system control.</div>
+              </div>
+              <div style="padding:4px 10px; border-radius:99px; background:rgba(0,212,255,0.1); border:1px solid rgba(0,212,255,0.3); font-size:11px; color:#00d4ff; font-weight:700;">4 CORES ONLINE</div>
+            </div>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px; margin-bottom:20px;">
+              ${Object.values(agents).map(a => `
+                <div style="background:rgba(255,255,255,0.02); border:1px solid ${a.color}40; border-radius:12px; padding:16px; transition:transform 0.2s;">
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                    <span style="font-size:22px;">${a.icon}</span>
+                    <span style="font-size:10px; font-weight:700; color:${a.color}; border:1px solid ${a.color}50; padding:2px 6px; border-radius:4px;">${esc(a.status)}</span>
+                  </div>
+                  <div style="font-size:15px; font-weight:700; color:#fff;">${esc(a.name)}</div>
+                  <div style="font-size:11px; color:${a.color}; font-weight:600; margin-top:2px;">${esc(a.title)}</div>
+                  <div style="font-size:11px; color:#94a3b8; margin-top:8px; line-height:1.4;">${esc(a.role)}</div>
+                  <div style="font-size:10px; color:#64748b; margin-top:10px;">Tasks Completed: ${a.tasks_completed || 0}</div>
+                </div>
+              `).join('')}
+            </div>
+            <div style="display:flex; gap:10px;">
+              <input id="agent-dispatch-inp" placeholder="Ask ATHENA to delegate a task to a specialist (e.g. 'Research quantum encryption', 'Scaffold auth service')…" style="flex:1; background:#020617; border:1px solid rgba(255,255,255,0.15); border-radius:8px; padding:10px 14px; color:#f8fafc;">
+              <button class="btn-routine" onclick="handleDispatchDelegation()">⚡ Dispatch Delegation</button>
+            </div>
+            <div id="agent-dispatch-result" style="margin-top:12px;"></div>
+          `;
+        } catch (e) {
+          container.innerHTML = '<div style="color:#ef4444;">Error loading multi-agent telemetry.</div>';
+        }
+      } else if (tab === 'voice_wizard') {
+        try {
+          const res = await fetch('/api/voice_train/prompts', { headers: { 'Authorization': 'Bearer ' + _authToken } });
+          const vdata = await res.json();
+          window._vwPrompts = vdata.prompts || [];
+          window._vwIndex = 0;
+          const vstat = vdata.status || {};
+          container.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+              <div>
+                <div style="font-size:16px; font-weight:700; color:#38bdf8;">🎙️ Founder Voice Recognition Wizard</div>
+                <div style="font-size:12px; color:#94a3b8;">5-Step acoustic profile enrollment for Anand_Honestic. Guest voices enter sandbox.</div>
+              </div>
+              <div style="padding:4px 10px; border-radius:99px; background:${vstat.enrolled ? 'rgba(16,185,129,0.1)' : 'rgba(234,179,8,0.1)'}; border:1px solid ${vstat.enrolled ? 'rgba(16,185,129,0.3)' : 'rgba(234,179,8,0.3)'}; color:${vstat.enrolled ? '#10b981' : '#eab308'}; font-size:11px; font-weight:700;">
+                ${vstat.enrolled ? '● ENROLLED & PROTECTED' : '○ PENDING ENROLLMENT'}
+              </div>
+            </div>
+            <div style="background:#020617; border:1px solid rgba(56,189,248,0.25); border-radius:14px; padding:20px; margin-bottom:20px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <span style="font-size:12px; font-weight:700; color:#38bdf8;">CURRENT ENROLLMENT PHRASE</span>
+                <span id="vw-step-lbl" style="font-size:12px; color:#94a3b8;">Step 1 of ${window._vwPrompts.length}</span>
+              </div>
+              <div id="vw-phrase" style="font-size:16px; font-weight:600; color:#fff; min-height:48px; background:rgba(255,255,255,0.03); padding:12px 16px; border-radius:8px; border-left:3px solid #00d4ff;">
+                "${esc(window._vwPrompts[0] || 'ATHENA, I am Anand Honestic. Verify my voice print.')}"
+              </div>
+              <div style="display:flex; gap:10px; margin-top:16px;">
+                <button class="btn-routine" style="background:#0284c7; color:#fff; font-weight:700;" onclick="handleRecordVoiceSample()">🎤 Record Sample</button>
+                <button class="btn-routine" onclick="handleNextVoicePrompt()">Next Phrase →</button>
+                <button class="btn-routine" style="margin-left:auto; background:rgba(16,185,129,0.15); border-color:#10b981; color:#10b981; font-weight:700;" onclick="handleFinalizeVoice()">✓ Finalize Voice Print</button>
+              </div>
+              <div id="vw-result" style="margin-top:14px; font-size:12px; color:#94a3b8;"></div>
+            </div>
+          `;
+        } catch (e) {
+          container.innerHTML = '<div style="color:#ef4444;">Error loading voice wizard.</div>';
+        }
+      } else if (tab === 'ultra_security') {
+        try {
+          const res = await fetch('/api/security/ultra', { headers: { 'Authorization': 'Bearer ' + _authToken } });
+          const sec = await res.json();
+          container.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+              <div>
+                <div style="font-size:16px; font-weight:700; color:#38bdf8;">🛡️ Ultra Security Mode & Vault Access</div>
+                <div style="font-size:12px; color:#94a3b8;">Multi-factor biometric clearance protecting private memories, vault, and configurations.</div>
+              </div>
+              <div style="padding:4px 10px; border-radius:99px; background:${sec.is_founder_authenticated ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)'}; border:1px solid ${sec.is_founder_authenticated ? 'rgba(16,185,129,0.3)' : 'rgba(239,68,68,0.3)'}; color:${sec.is_founder_authenticated ? '#10b981' : '#f87171'}; font-size:11px; font-weight:700;">
+                ${esc(sec.tier)}
+              </div>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:20px;">
+              <div style="background:#020617; border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:18px;">
+                <div style="font-size:13px; font-weight:700; color:#fff; margin-bottom:10px;">Security Verification PIN</div>
+                <input id="sec-pin-inp" type="password" placeholder="Enter Founder Security PIN…" style="width:100%; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.15); border-radius:8px; padding:10px 14px; color:#fff; margin-bottom:12px;">
+                <div style="display:flex; gap:8px;">
+                  <button class="btn-routine" style="background:#0284c7; color:#fff; font-weight:700;" onclick="handleVerifyPin()">Verify PIN</button>
+                  <button class="btn-routine" style="background:rgba(239,68,68,0.15); border-color:#ef4444; color:#f87171;" onclick="handleLockVault()">🔒 Lock Vault</button>
+                </div>
+                <div id="sec-pin-msg" style="margin-top:10px; font-size:12px;"></div>
+              </div>
+              <div style="background:#020617; border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:18px;">
+                <div style="font-size:13px; font-weight:700; color:#fff; margin-bottom:10px;">Security Architecture</div>
+                <div style="font-size:12px; color:#cbd5e1; line-height:1.6;">
+                  • Encryption: ${esc(sec.encryption)}<br>
+                  • Biometric Check: ${sec.voice_enforced ? 'Voice Print Enforced' : 'Disabled'}<br>
+                  • Guest Mode: ${sec.is_guest ? 'Sandbox Active' : 'Owner Session'}<br>
+                  • Vault Lockdown: ${sec.is_locked ? 'Locked' : 'Unlocked'}
+                </div>
+              </div>
+            </div>
+          `;
+        } catch (e) {
+          container.innerHTML = '<div style="color:#ef4444;">Error loading security status.</div>';
+        }
+      } else if (tab === 'visual_learning') {
+        container.innerHTML = `
+          <div style="display:flex; gap:10px; margin-bottom:16px;">
+            <input id="vl-query" placeholder="Enter topic: DNS, HTTPS, Python, Linux, AI, Cybersecurity..." style="flex:1; background:#020617; border:1px solid rgba(255,255,255,0.15); border-radius:8px; padding:8px 14px; color:#f8fafc;" value="DNS">
+            <button class="btn-routine" onclick="fetchVisualCard()">Generate Blueprint</button>
+          </div>
+          <div id="vl-card-content" style="background:#020617; border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:18px;">
+            Click 'Generate Blueprint' to load 8-part visual explanation.
+          </div>
+        `;
+        fetchVisualCard('DNS');
+      }
+    }
+
+    async function fetchVisualCard(defaultTopic) {
+      const topic = defaultTopic || document.getElementById('vl-query')?.value || 'DNS';
+      const card = document.getElementById('vl-card-content');
+      if (!card) return;
+      card.innerHTML = '<div style="color:#64748b;">Synthesizing visual learning architecture...</div>';
+      try {
+        const res = await fetch('/api/visual_learn?topic=' + encodeURIComponent(topic));
+        const data = await res.json();
+        card.innerHTML = `
+          <div style="font-size:16px; font-weight:700; color:#38bdf8; margin-bottom:6px;">${esc(data.title)} <span style="font-size:11px; color:#94a3b8; font-weight:normal;">(${esc(data.category)})</span></div>
+          <p style="color:#cbd5e1; font-size:13px; margin-bottom:14px;">${esc(data.explanation)}</p>
+          <div style="font-size:11px; text-transform:uppercase; color:#94a3b8; font-weight:700; margin-bottom:4px;">Topology / Flowchart</div>
+          <pre style="background:#0f172a; border:1px solid rgba(255,255,255,0.06); border-radius:8px; padding:12px; color:#7dd3fc; overflow-x:auto; font-size:11px;">${esc(data.diagram)}</pre>
+          <div style="font-size:11px; text-transform:uppercase; color:#94a3b8; font-weight:700; margin:14px 0 4px;">Real Example</div>
+          <pre style="background:#0f172a; border:1px solid rgba(255,255,255,0.06); border-radius:8px; padding:10px; color:#a7f3d0; font-size:11px; overflow-x:auto;">${esc(data.real_example)}</pre>
+          <div style="margin-top:14px; padding:12px; background:rgba(56,189,248,0.08); border-radius:8px; border:1px solid rgba(56,189,248,0.2);">
+            <div style="font-size:12px; font-weight:700; color:#38bdf8; margin-bottom:4px;">Knowledge Check</div>
+            <div style="font-size:12px; color:#e2e8f0; margin-bottom:6px;">${esc(data.quiz?.question)}</div>
+            <div style="font-size:11px; color:#94a3b8;">${(data.quiz?.options || []).map(o => esc(o)).join('<br>')}</div>
+            <button class="btn-routine" style="margin-top:8px; padding:4px 10px; font-size:11px;" onclick="alert('${esc(data.quiz?.correct)}: ${esc(data.quiz?.explanation)}')">Reveal Answer</button>
+          </div>
+        `;
+      } catch (e) {
+        card.innerHTML = '<div style="color:#ef4444;">Failed to generate visual card.</div>';
+      }
+    }
+
+    async function saveWorkspace() {
+      try {
+        const res = await fetch('/api/workspace/save', { method: 'POST', headers: { 'Authorization': 'Bearer ' + _authToken } });
+        const d = await res.json();
+        toast('Workspace Saved: ' + (d.apps || []).join(', '));
+      } catch (e) {
+        toast('Error saving workspace');
+      }
+    }
+
+    async function restoreWorkspace() {
+      try {
+        const res = await fetch('/api/workspace/restore', { method: 'POST', headers: { 'Authorization': 'Bearer ' + _authToken } });
+        const d = await res.json();
+        toast('Workspace Restored: ' + (d.restored_apps || []).join(', '));
+      } catch (e) {
+        toast('Error restoring workspace');
+      }
+    }
+
+    async function handleAddTask() {
+      const inp = document.getElementById('new-task-inp');
+      const cat = document.getElementById('new-task-cat')?.value || 'pending';
+      const text = inp?.value?.trim();
+      if (!text) return;
+      try {
+        await fetch('/api/projects/task', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + _authToken, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'add', title: text, category: cat })
+        });
+        toast('Task added to Project Manager');
+        renderTab('projects');
+      } catch (e) {
+        toast('Error adding task');
+      }
+    }
+
+    async function handleCompleteTask(taskId) {
+      try {
+        await fetch('/api/projects/task', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + _authToken, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'complete', task_id: taskId })
+        });
+        toast('Task marked as completed');
+        renderTab('projects');
+      } catch (e) {
+        toast('Error completing task');
+      }
+    }
+
+    async function handleCreateBackup() {
+      try {
+        toast('Creating full system snapshot...');
+        const res = await fetch('/api/backup/create', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + _authToken, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ label: 'dashboard_snapshot' })
+        });
+        const d = await res.json();
+        if (d.ok) toast('Backup Created: ' + d.filename);
+        renderTab('backup');
+      } catch (e) {
+        toast('Backup creation failed');
+      }
+    }
+
+    async function handleRestoreBackup(archiveName) {
+      if (!confirm('Are you sure you want to restore system state from ' + archiveName + '?')) return;
+      try {
+        toast('Restoring system state...');
+        const res = await fetch('/api/backup/restore', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + _authToken, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ archive_name: archiveName })
+        });
+        const d = await res.json();
+        if (d.ok) toast('System restored successfully!');
+        else toast('Restore error: ' + d.error);
+        renderTab('backup');
+      } catch (e) {
+        toast('Restore failed');
+      }
+    }
+
+    async function handleFetchReplay(period) {
+      const el = document.getElementById('replay-content');
+      if (!el) return;
+      el.innerHTML = '<div style="color:#64748b;">Synthesizing replay for ' + period + '...</div>';
+      try {
+        const res = await fetch('/api/replay?period=' + period, { headers: { 'Authorization': 'Bearer ' + _authToken } });
+        const data = await res.json();
+        el.innerHTML = `
+          <div style="font-size:15px; font-weight:700; color:#38bdf8; margin-bottom:8px;">${esc(data.period?.toUpperCase() || period.toUpperCase())} REPLAY</div>
+          <p style="color:#cbd5e1; font-size:13px; margin-bottom:14px; line-height:1.6;">${esc(data.summary || 'No conversations recorded for this period.')}</p>
+          <div style="font-size:11px; text-transform:uppercase; color:#94a3b8; font-weight:700; margin-bottom:6px;">Key Topics</div>
+          <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px;">
+            ${(data.key_topics || []).map(t => `<span style="padding:3px 8px; background:rgba(56,189,248,0.1); border:1px solid rgba(56,189,248,0.25); border-radius:4px; font-size:11px; color:#7dd3fc;">${esc(t)}</span>`).join('')}
+          </div>
+          <div style="font-size:11px; text-transform:uppercase; color:#94a3b8; font-weight:700; margin-bottom:6px;">Decisions & Milestones</div>
+          <div style="font-size:12px; color:#cbd5e1; line-height:1.6;">
+            ${(data.decisions || []).map(d => '• ' + esc(d)).join('<br>')}
+          </div>
+        `;
+      } catch (e) {
+        el.innerHTML = '<div style="color:#ef4444;">Error fetching replay.</div>';
+      }
+    }
+
+    let _graphSim = null;
+    function initInteractiveGraph() {
+      const cvs = document.getElementById('graph-canvas');
+      if (!cvs) return;
+      const ctx = cvs.getContext('2d');
+      const inspect = document.getElementById('graph-node-inspect');
+
+      fetch('/api/second_brain', { headers: { 'Authorization': 'Bearer ' + _authToken } })
+        .then(r => r.json())
+        .then(data => {
+          const rawNodes = data.nodes || [];
+          const rawEdges = data.edges || [];
+
+          if (rawNodes.length === 0) {
+            rawNodes.push(
+              { id: 'honestic_os', title: 'HONESTIC OS', type: 'project', tags: ['core', 'ai'] },
+              { id: 'athena_core', title: 'ATHENA AI Core', type: 'research', tags: ['athena', 'gemini'] },
+              { id: 'anand_founder', title: 'Anand_Honestic', type: 'note', tags: ['founder', 'creator'] },
+              { id: 'multi_agent', title: 'Multi-Agent Hive', type: 'idea', tags: ['nova', 'aura', 'friday'] },
+              { id: 'sec_vault', title: 'Ultra Security Vault', type: 'project', tags: ['zero_trust', 'security'] }
+            );
+            rawEdges.push(
+              { source: 'anand_founder', target: 'honestic_os', label: 'created_by' },
+              { source: 'athena_core', target: 'honestic_os', label: 'powers' },
+              { source: 'multi_agent', target: 'athena_core', label: 'coordinates' },
+              { source: 'sec_vault', target: 'honestic_os', label: 'protects' }
+            );
+          }
+
+          const W = cvs.width;
+          const H = cvs.height;
+          const R = Math.min(W, H) * 0.35;
+          const cx = W / 2;
+          const cy = H / 2;
+
+          const nodes = rawNodes.map((n, i) => {
+            const angle = (i / rawNodes.length) * Math.PI * 2;
+            return {
+              ...n,
+              x: cx + Math.cos(angle) * R + (Math.random() - 0.5) * 30,
+              y: cy + Math.sin(angle) * R + (Math.random() - 0.5) * 30,
+              radius: n.type === 'project' ? 24 : 18,
+              color: n.type === 'project' ? '#00d4ff' : n.type === 'idea' ? '#a855f7' : n.type === 'research' ? '#10b981' : '#eab308'
+            };
+          });
+
+          let draggedNode = null;
+
+          function draw() {
+            ctx.clearRect(0, 0, W, H);
+
+            // Draw glowing grid background
+            ctx.strokeStyle = 'rgba(56, 189, 248, 0.05)';
+            ctx.lineWidth = 1;
+            for (let x = 0; x < W; x += 40) {
+              ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+            }
+            for (let y = 0; y < H; y += 40) {
+              ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+            }
+
+            // Draw edges
+            rawEdges.forEach(e => {
+              const src = nodes.find(n => n.id === e.source) || nodes[0];
+              const tgt = nodes.find(n => n.id === e.target) || nodes[nodes.length - 1];
+              if (src && tgt) {
+                ctx.beginPath();
+                ctx.moveTo(src.x, src.y);
+                ctx.lineTo(tgt.x, tgt.y);
+                ctx.strokeStyle = 'rgba(56, 189, 248, 0.25)';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+
+                // Edge label
+                const mx = (src.x + tgt.x) / 2;
+                const my = (src.y + tgt.y) / 2;
+                ctx.fillStyle = 'rgba(148, 163, 184, 0.6)';
+                ctx.font = '9px monospace';
+                ctx.fillText(e.label || 'connected', mx - 15, my - 5);
+              }
+            });
+
+            // Draw nodes
+            nodes.forEach(n => {
+              // Outer glow
+              ctx.beginPath();
+              ctx.arc(n.x, n.y, n.radius + 6, 0, Math.PI * 2);
+              ctx.fillStyle = n.color + '15';
+              ctx.fill();
+
+              // Circle body
+              ctx.beginPath();
+              ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
+              ctx.fillStyle = '#0b0f19';
+              ctx.fill();
+              ctx.lineWidth = 2;
+              ctx.strokeStyle = n.color;
+              ctx.stroke();
+
+              // Title label
+              ctx.fillStyle = '#f1f5f9';
+              ctx.font = '11px sans-serif';
+              ctx.textAlign = 'center';
+              ctx.fillText(n.title || n.id, n.x, n.y + n.radius + 14);
+            });
+          }
+
+          draw();
+
+          function getCoords(e) {
+            const rect = cvs.getBoundingClientRect();
+            const touch = e.touches && e.touches[0] ? e.touches[0] : (e.changedTouches && e.changedTouches[0] ? e.changedTouches[0] : e);
+            return {
+              x: (touch.clientX - rect.left) * (W / rect.width),
+              y: (touch.clientY - rect.top) * (H / rect.height)
+            };
+          }
+
+          function onStart(e) {
+            const pos = getCoords(e);
+            for (const n of nodes) {
+              const d = Math.hypot(n.x - pos.x, n.y - pos.y);
+              if (d <= n.radius + 8) {
+                draggedNode = n;
+                if (inspect) {
+                  inspect.innerHTML = `
+                    <div style="font-size:14px; font-weight:700; color:${n.color};">${esc(n.title || n.id)} (${esc(n.type || 'node')})</div>
+                    <div style="font-size:12px; color:#cbd5e1; margin-top:4px;">${esc(n.content || 'Active node in Second Brain knowledge topology.')}</div>
+                    <div style="font-size:11px; color:#64748b; margin-top:6px;">Tags: ${(n.tags || []).map(t => '#' + esc(t)).join(' ')}</div>
+                  `;
+                }
+                if (e.cancelable) e.preventDefault();
+                break;
+              }
+            }
+          }
+
+          function onMove(e) {
+            if (draggedNode) {
+              const pos = getCoords(e);
+              draggedNode.x = Math.max(draggedNode.radius, Math.min(W - draggedNode.radius, pos.x));
+              draggedNode.y = Math.max(draggedNode.radius, Math.min(H - draggedNode.radius, pos.y));
+              draw();
+              if (e.cancelable) e.preventDefault();
+            }
+          }
+
+          function onEnd() { draggedNode = null; }
+
+          cvs.addEventListener('mousedown', onStart);
+          cvs.addEventListener('mousemove', onMove);
+          window.addEventListener('mouseup', onEnd);
+
+          cvs.addEventListener('touchstart', onStart, { passive: false });
+          cvs.addEventListener('touchmove', onMove, { passive: false });
+          window.addEventListener('touchend', onEnd);
+        });
+    }
+
+    // ── Voice Center Web & Mobile Companion Handlers ────────────────────────
+    async function handleWebSwitchVoice(vname) {
+      try {
+        toast('Switching voice to ' + vname + '...');
+        const res = await fetch('/api/voice/switch', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + _authToken, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ voice: vname })
+        });
+        const d = await res.json();
+        if (d.ok) {
+          toast('✓ Active voice switched to ' + d.active_voice);
+          renderTab('voice_center');
+        }
+      } catch (e) {
+        toast('Voice switch failed');
+      }
+    }
+
+    async function handleWebPreviewVoice(vname) {
+      try {
+        toast('Auditioning ' + vname + '...');
+        await fetch('/api/voice/preview', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + _authToken, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ voice: vname })
+        });
+      } catch (e) {
+        toast('Preview error');
+      }
+    }
+
+    async function handleWebSelectProfile(pname) {
+      try {
+        toast('Applying ' + pname + ' profile...');
+        const res = await fetch('/api/voice/profile', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + _authToken, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ profile: pname })
+        });
+        const d = await res.json();
+        if (d.ok) {
+          toast('✓ Voice profile applied: ' + d.active_profile);
+          renderTab('voice_center');
+        }
+      } catch (e) {
+        toast('Profile selection error');
+      }
+    }
+
+    function handleResetAthenaOmegaSliders() {
+      const defs = {warmth:95, pitch:55, speed:45, energy:60, expressiveness:85, pause_length:75, breath_level:80, humanity_level:100, conversational_level:100};
+      Object.entries(defs).forEach(([k, v]) => {
+        const inp = document.getElementById('slider-inp-' + k);
+        const val = document.getElementById('slider-val-' + k);
+        if (inp) inp.value = v;
+        if (val) val.innerText = v + ' / 100';
+      });
+      handleSaveWebSliders();
+    }
+
+    function handleResetAthenaPrimeSliders() {
+      const defs = {warmth:85, pitch:58, speed:48, energy:62, expressiveness:72, pause_length:60, breath_level:65, humanity_level:90, conversational_level:80};
+      Object.entries(defs).forEach(([k, v]) => {
+        const inp = document.getElementById('slider-inp-' + k);
+        const val = document.getElementById('slider-val-' + k);
+        if (inp) inp.value = v;
+        if (val) val.innerText = v + ' / 100';
+      });
+      handleSaveWebSliders();
+    }
+
+    async function handleSaveWebSliders() {
+      try {
+        const axes = ['warmth', 'pitch', 'speed', 'energy', 'expressiveness', 'pause_length', 'breath_level', 'humanity_level', 'conversational_level'];
+        const params = {};
+        axes.forEach(a => {
+          const el = document.getElementById('slider-inp-' + a);
+          if (el) params[a] = parseInt(el.value, 10);
+        });
+        toast('Saving 9-axis prosody sliders...');
+        const res = await fetch('/api/voice/custom', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + _authToken, 'Content-Type': 'application/json' },
+          body: JSON.stringify(params)
+        });
+        const d = await res.json();
+        if (d.ok) {
+          toast('✓ Acoustic sliders saved!');
+          // Audition adjustments with Athena Prime
+          handleWebPreviewVoice('Athena Prime');
+        }
+      } catch (e) {
+        toast('Error saving sliders');
+      }
+    }
+
+    async function handleSaveWebFounderProfile() {
+      try {
+        const inp = document.getElementById('web-founder-inp');
+        const name = (inp ? inp.value.trim() : '') || 'ATHENA - Founder Edition';
+        const res = await fetch('/api/voice/founder_profile', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + _authToken, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: name })
+        });
+        const d = await res.json();
+        const msg = document.getElementById('web-fp-msg');
+        if (msg) msg.innerText = '✓ Saved ' + name + ' automatically to HONESTIC OS memory.';
+        toast('✓ Founder Profile Saved!');
+      } catch (e) {
+        toast('Error saving founder profile');
+      }
+    }
+
+    async function handleTestWebRecognition() {
+      try {
+        toast('Triggering Founder greeting...');
+        const res = await fetch('/api/voice/test_recognition', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + _authToken, 'Content-Type': 'application/json' }
+        });
+        const d = await res.json();
+        const msg = document.getElementById('web-rec-msg');
+        if (msg) msg.innerText = '✓ ' + (d.message || 'Greeting executed');
+        toast('ATHENA: "Welcome back Anand_Honestic."');
+      } catch (e) {
+        toast('Recognition test error');
+      }
+    }
+
+    async function cycleMode() {
+      const modeLbl = document.getElementById('mode-lbl');
+      const current = (modeLbl?.textContent || 'ONLINE').toLowerCase();
+      const next = current === 'online' ? 'hybrid' : current === 'hybrid' ? 'auto' : current === 'auto' ? 'offline' : 'online';
+      try {
+        const res = await fetch('/api/offline', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + _authToken, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ mode: next })
+        });
+        const d = await res.json();
+        if (modeLbl) modeLbl.textContent = next.toUpperCase();
+        toast('Switched to ' + next.toUpperCase() + ' MODE');
+        if (document.getElementById('mode-val')) {
+          document.getElementById('mode-val').textContent = next.toUpperCase() + ' Active';
+        }
+      } catch (e) {
+        toast('Failed to switch operational mode');
+      }
+    }
+
+    async function activateFounderMode() {
+      try {
+        const res = await fetch('/api/founder/mode', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + _authToken, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ source: 'dashboard_founder_card' })
+        });
+        const d = await res.json();
+        toast('👑 Founder Mode Active: ' + (d.greeting || 'Clearance Verified'));
+        await loadMissionControlData();
+        renderTab('founder_mode');
+      } catch (e) {
+        toast('Failed to activate Founder Mode');
+      }
+    }
+
+    async function refreshPairingQR() {
+      try {
+        const res = await fetch('/api/mobile/pairing', {
+          headers: { 'Authorization': 'Bearer ' + _authToken }
+        });
+        const d = await res.json();
+        renderQRCanvas(d.qr_url);
+        toast('New pairing security seed generated');
+      } catch (e) {
+        toast('Failed to generate pairing QR');
+      }
+    }
+
+    function renderQRCanvas(url) {
+      const cv = document.getElementById('qr-canvas');
+      if (!cv) return;
+      const ctx = cv.getContext('2d');
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, 140, 140);
+      ctx.fillStyle = '#0f172a';
+      // Draw standard QR aesthetic position markers
+      ctx.fillRect(10, 10, 36, 36);
+      ctx.clearRect(16, 16, 24, 24);
+      ctx.fillRect(22, 22, 12, 12);
+
+      ctx.fillRect(94, 10, 36, 36);
+      ctx.clearRect(100, 16, 24, 24);
+      ctx.fillRect(106, 22, 12, 12);
+
+      ctx.fillRect(10, 94, 36, 36);
+      ctx.clearRect(16, 100, 24, 24);
+      ctx.fillRect(22, 106, 12, 12);
+
+      // Random deterministic bit grid simulating high-density code
+      ctx.fillStyle = '#0284c7';
+      for (let i = 0; i < 9; i++) {
+        for (let j = 0; j < 9; j++) {
+          if ((i * 7 + j * 13) % 2 === 0) {
+            ctx.fillRect(48 + (i * 5), 48 + (j * 5), 4, 4);
+          }
+        }
+      }
+    }
+
+    async function revokeDevice(deviceId) {
+      if (!confirm('Revoke trusted access for this mobile device?')) return;
+      try {
+        const res = await fetch('/api/mobile/device/revoke', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + _authToken, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ device_id: deviceId })
+        });
+        toast('Device revoked');
+        await loadMissionControlData();
+        renderTab('mobile_companion');
+      } catch (e) {
+        toast('Error revoking device');
+      }
+    }
+
+    async function dispatchRemoteAction(act, params = {}) {
+      try {
+        const res = await fetch('/api/mobile/remote_action', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + _authToken, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: act, parameters: params })
+        });
+        const d = await res.json();
+        toast('Remote ' + act + ': ' + (d.message || (d.ok ? 'Success' : 'Failed')));
+      } catch (e) {
+        toast('Remote action failed');
+      }
+    }
+
+    async function handleDispatchDelegation() {
+      const inp = document.getElementById('agent-dispatch-inp');
+      const out = document.getElementById('agent-dispatch-result');
+      const text = inp?.value?.trim();
+      if (!text || !out) return;
+      out.innerHTML = '<div style="color:#64748b; font-size:12px;">ATHENA analyzing directive and delegating to specialist...</div>';
+      try {
+        const res = await fetch('/api/multi_agent/delegate', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + _authToken, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query: text })
+        });
+        const d = await res.json();
+        out.innerHTML = `
+          <div style="padding:12px; background:rgba(0,212,255,0.06); border:1px solid rgba(0,212,255,0.25); border-radius:10px; font-size:12px;">
+            <div style="font-weight:700; color:#38bdf8;">✓ Delegated to ${esc(d.delegated_to)} (${esc(d.specialist_title)})</div>
+            <div style="color:#cbd5e1; margin-top:4px;">${esc(d.reasoning)}</div>
+          </div>
+        `;
+        inp.value = '';
+      } catch (e) {
+        out.innerHTML = '<div style="color:#ef4444; font-size:12px;">Delegation failed.</div>';
+      }
+    }
+
+    async function handleRecordVoiceSample() {
+      const resEl = document.getElementById('vw-result');
+      if (resEl) resEl.innerHTML = '<span style="color:#38bdf8;">Recording acoustic signature (F0 pitch, RMS, harmonics)...</span>';
+      try {
+        const res = await fetch('/api/voice_train/sample', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + _authToken, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phrase_index: window._vwIndex || 0 })
+        });
+        const d = await res.json();
+        if (resEl) {
+          resEl.innerHTML = `<span style="color:#10b981;">✓ ${esc(d.message || 'Sample registered successfully.')}</span>`;
+        }
+        toast('Voice sample registered');
+      } catch (e) {
+        if (resEl) resEl.innerHTML = '<span style="color:#ef4444;">Error recording sample.</span>';
+      }
+    }
+
+    function handleNextVoicePrompt() {
+      const prompts = window._vwPrompts || [];
+      if (prompts.length === 0) return;
+      window._vwIndex = ((window._vwIndex || 0) + 1) % prompts.length;
+      const phraseEl = document.getElementById('vw-phrase');
+      const stepEl = document.getElementById('vw-step-lbl');
+      if (phraseEl) phraseEl.textContent = `"${prompts[window._vwIndex]}"`;
+      if (stepEl) stepEl.textContent = `Step ${window._vwIndex + 1} of ${prompts.length}`;
+      const resEl = document.getElementById('vw-result');
+      if (resEl) resEl.textContent = '';
+    }
+
+    async function handleFinalizeVoice() {
+      const resEl = document.getElementById('vw-result');
+      if (resEl) resEl.innerHTML = '<span style="color:#38bdf8;">Synthesizing composite biometric voice model...</span>';
+      try {
+        const res = await fetch('/api/voice_train/finalize', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + _authToken }
+        });
+        const d = await res.json();
+        if (resEl) {
+          resEl.innerHTML = `
+            <div style="padding:12px; background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.3); border-radius:8px; color:#10b981; font-weight:700;">
+              👑 ${esc(d.greeting)} Voice profile enrolled and protected!
+            </div>
+          `;
+        }
+        toast('Voice Enrollment Complete!');
+      } catch (e) {
+        if (resEl) resEl.innerHTML = '<span style="color:#ef4444;">Error finalizing voice.</span>';
+      }
+    }
+
+    async function handleVerifyPin() {
+      const pin = document.getElementById('sec-pin-inp')?.value;
+      const msg = document.getElementById('sec-pin-msg');
+      if (!pin) return;
+      try {
+        const res = await fetch('/api/security/pin/verify', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + _authToken, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ pin: pin })
+        });
+        const d = await res.json();
+        if (d.ok) {
+          if (msg) msg.innerHTML = '<span style="color:#10b981; font-weight:700;">✓ Founder Clearance Verified. Vault Unlocked.</span>';
+          toast('Founder Clearance Granted');
+          renderTab('ultra_security');
+        } else {
+          if (msg) msg.innerHTML = '<span style="color:#ef4444; font-weight:700;">✗ PIN Incorrect. Vault remains protected.</span>';
+        }
+      } catch (e) {
+        if (msg) msg.innerHTML = '<span style="color:#ef4444;">Verification error.</span>';
+      }
+    }
+
+    async function handleLockVault() {
+      try {
+        await fetch('/api/security/lock', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + _authToken }
+        });
+        toast('🔒 Vault Locked Immediately');
+        renderTab('ultra_security');
+      } catch (e) {
+        toast('Lock failed');
+      }
+    }
+
+
+
+
+    // ── Voice Streaming (Web Audio) ──────────────────────────────────────────
+    let _voiceWs = null;
+    let _audioCtx = null;
+    let _micStm = null;
+
+    async function doMic() {
+      if (_voiceWs) {
+        stopMic();
+        return;
+      }
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: { channelCount: 1, sampleRate: 16000 }
+        });
+        _micStm = stream;
+        const proto = location.protocol === 'https:' ? 'wss' : 'ws';
+        _voiceWs = new WebSocket(`${proto}://${location.host}/ws/phone-audio?token=${encodeURIComponent(_authToken)}`);
+        _voiceWs.binaryType = 'arraybuffer';
+
+        _voiceWs.onopen = () => {
+          micBtn.classList.add('recording');
+          toast('🎤 Voice Live — speak now');
+          _audioCtx = new AudioContext({ sampleRate: 16000 });
+          const src = _audioCtx.createMediaStreamSource(stream);
+          const sp = _audioCtx.createScriptProcessor(2048, 1, 1);
+          sp.onaudioprocess = (e) => {
+            if (_voiceWs.readyState === 1) {
+              const f32 = e.inputBuffer.getChannelData(0);
+              const i16 = new Int16Array(f32.length);
+              for (let i = 0; i < f32.length; i++) {
+                i16[i] = Math.max(-32768, Math.min(32767, f32[i] * 32768));
+              }
+              _voiceWs.send(i16.buffer);
+            }
+          };
+          src.connect(sp);
+          sp.connect(_audioCtx.destination);
+        };
+        _voiceWs.onclose = () => stopMic();
+      } catch (e) {
+        toast('Microphone error: ' + e.message);
+        stopMic();
+      }
+    }
+
+    function stopMic() {
+      if (_micStm) { _micStm.getTracks().forEach(t => t.stop()); _micStm = null; }
+      if (_audioCtx) { _audioCtx.close(); _audioCtx = null; }
+      if (_voiceWs) { _voiceWs.close(); _voiceWs = null; }
+      micBtn.classList.remove('recording');
+    }
+
+    // Initialize
+    connectWs();
+  </script>
+</body>
+</html>

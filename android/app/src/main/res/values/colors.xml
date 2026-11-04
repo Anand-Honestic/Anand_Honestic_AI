@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary">#00629E</color>
+    <color name="on_primary">#FFFFFF</color>
+    <color name="primary_dark">#99CBFF</color>
+    <color name="on_primary_dark">#003355</color>
+    <color name="secondary">#526070</color>
+    <color name="on_secondary">#FFFFFF</color>
+    <color name="secondary_dark">#BAC8DB</color>
+    <color name="on_secondary_dark">#243240</color>
+    <color name="status_bar_color">#00629E</color>
+    <color name="status_bar_color_dark">#001D33</color>
+    <color name="ic_launcher_background">#0F172A</color>
+</resources>

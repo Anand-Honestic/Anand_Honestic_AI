@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+  relay:
+    build:
+      context: ..
+      dockerfile: relay/Dockerfile
+    restart: unless-stopped
+    environment:
+      - PORT=8080
+    expose:
+      - "8080"
+    networks:
+      - relay_net
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - RELAY_DOMAIN=${RELAY_DOMAIN:-relay.honestic.ai}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - relay_net
+    depends_on:
+      - relay
+
+networks:
+  relay_net:
+    driver: bridge
+
+volumes:
+  caddy_data:
+  caddy_config:
+

@@ -1,0 +1,26 @@
+{$RELAY_DOMAIN:relay.honestic.ai} {
+    # Automatic HTTPS via Let's Encrypt / ZeroSSL
+    encode zstd gzip
+
+    # WebSocket & HTTP reverse proxy to internal relay container
+    reverse_proxy relay:8080 {
+        header_up Host {host}
+        header_up X-Real-IP {remote_host}
+        header_up X-Forwarded-For {remote_host}
+        header_up X-Forwarded-Proto {scheme}
+    }
+
+    # Security Headers
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "DENY"
+        -Server
+    }
+
+    log {
+        output stdout
+        format console
+    }
+}
+

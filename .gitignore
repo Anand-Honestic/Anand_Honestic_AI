@@ -1,0 +1,224 @@
+# ==============================================================================
+# HONESTIC OS / ATHENA + DUAL-AI COMPANION .gitignore
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# 1. SECRETS, CREDENTIALS & SENSITIVE CONFIGURATION (CRITICAL - NEVER COMMIT)
+# ------------------------------------------------------------------------------
+# Environment Variables & Secret Files
+.env
+.env.*
+!.env.example
+*.env
+*.env.*
+
+# Private Configuration Files & Credentials
+config/api_keys.json
+config/security_auth.json*
+config/trusted_devices.json*
+config/crash_guard.json*
+config/fcm_service_account.json*
+!config/fcm_service_account.json.template
+config/certs/
+config/whatsapp_web/
+
+# Mobile Cloud & Auth Service Credentials
+android/app/google-services.json
+ios/**/GoogleService-Info.plist
+
+# Generalized Key and Secret File Patterns
+*credentials*.json
+**/client_secret*.json
+**/token*.json
+*token*.json
+*secret*.json
+*.secret
+*.secrets
+auth_token*
+jwt_secret*
+
+# Cryptographic Keys, Certificates & SSL
+*.pem
+*.key
+*.p12
+*.pfx
+*.pkcs12
+*.crt
+*.cer
+*.der
+*.csr
+id_rsa
+id_rsa.pub
+id_ed25519
+id_ed25519.pub
+*.jks
+*.keystore
+
+# ------------------------------------------------------------------------------
+# 2. PERSONAL MEMORY, VAULT DATA & PRIVATE STATE
+# ------------------------------------------------------------------------------
+# User Data & Secure Vault Storage
+data/secure_vault/
+data/audit_logs/
+data/screen_captures/
+data/*.png
+data/*.jpg
+data/*.jpeg
+data/*.webp
+data/*.json
+data/*.jsonl
+data/qr_pairing_*.png
+!data/.gitkeep
+
+# Memory Runtime Data & User Digital Twin State
+memory/*.json
+memory/*.json.bak
+memory/*.db
+memory/*.sqlite
+memory/*.sqlite3
+memory/archive/
+memory/profiles/
+memory/voice_cache/
+memory/workspaces/
+!memory/__init__.py
+!memory/config_manager.py
+!memory/digital_twin.py
+!memory/memory_manager.py
+!memory/screen_memory.py
+
+# Knowledge Vault (Personal User Notes, Documents & Private Projects)
+knowledge_vault/notes/
+knowledge_vault/pdfs/
+knowledge_vault/research/
+knowledge_vault/vault_index.json*
+
+# Backups & Compressed Archive Dumps
+backups/
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.rar
+*.7z
+*.bak
+*.backup
+*.old
+*.orig
+*.tmp
+*.temp
+
+# ------------------------------------------------------------------------------
+# 3. RUNTIME OUTPUT, LOGS & TELEMETRY
+# ------------------------------------------------------------------------------
+*.log
+logs/
+*.out
+screenshots/
+audio-test-log.txt
+*.audit
+*.audit.jsonl
+*.telemetry
+
+# ------------------------------------------------------------------------------
+# 4. PYTHON BUILD & CACHE ARTIFACTS
+# ------------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environments
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# ------------------------------------------------------------------------------
+# Build artifacts
+# ------------------------------------------------------------------------------
+.gradle/
+build/
+**/build/
+android/.gradle/
+android/app/build/
+local.properties
+*.apk
+*.aab
+*.ap_
+*.dex
+*.class
+captures/
+.externalNativeBuild/
+.cxx/
+
+# ------------------------------------------------------------------------------
+# 6. IOS (SWIFT / XCODE)
+# ------------------------------------------------------------------------------
+*.xcworkspace
+xcuserdata/
+DerivedData/
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+*.xccheckout
+*.moved-aside
+*.ipa
+*.dSYM.zip
+*.dSYM
+Pods/
+
+# ------------------------------------------------------------------------------
+# 7. NODE.JS & WEB (IF APPLICABLE)
+# ------------------------------------------------------------------------------
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# ------------------------------------------------------------------------------
+# System files & IDEs
+# ------------------------------------------------------------------------------
+# System files
+.DS_Store
+Thumbs.db
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+desktop.ini
+
+# IDEs & Editors
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+*.sublime-project
+*.sublime-workspace

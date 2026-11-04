@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ATHENA Phone AI</string>
+    <string name="accessibility_service_description">ATHENA uses this service strictly to automate actions inside apps you have explicitly checked in the Whitelist. ATHENA never logs passwords, reads credit card information, or interacts with unapproved apps.</string>
+    <string name="accessibility_disclosure_title">Accessibility Permission Disclosure</string>
+    <string name="accessibility_disclosure_body">ATHENA requires Accessibility access to interact with your whitelisted applications (e.g. typing a message or opening a video upon your PC command).\n\n• No personal keystrokes are recorded.\n• Password and payment fields are strictly blocked.\n• You can revoke app access at any time in the Whitelist settings.</string>
+</resources>
+
