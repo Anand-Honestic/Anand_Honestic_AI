@@ -10,7 +10,7 @@
 The repository is strictly structured into modular components:
 
 ```
-Mark-LVI-main/
+Anand_Honestic_AI/
 ├── core/                  # PC Python Engine & Services
 │   ├── remote_security/   # Ed25519 identity, AES-256-GCM cipher, DPAPI registry, Replay defense
 │   ├── remote_companion_server.py # WSS / LAN companion server & session lifecycle
