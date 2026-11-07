@@ -84,7 +84,7 @@ Anand_Honestic_AI/
 
 #### Step 1.1: Clone and Create Virtual Environment
 ```powershell
-cd Mark-LVI-main
+cd Anand_Honestic_AI
 python -m venv .venv
 .venv\Scripts\activate
 ```
